@@ -1,0 +1,100 @@
+programa
+inicio
+inivar
+	a b,c,ve: entero
+	e,f g,vf: real;
+	vc: caracter;
+	vl: booleano;
+	pe, pe2: p··ila entero;
+	pf, pf2: pila real;
+	pc, pc2: pila caracter;
+	pl: pila booleano;
+finvar
+
+procedimiento procA( a1 c: entero; a2: real; a3: caracter)
+inicio
+	inivar 
+		x1, x2, x3: entero;
+		y1, y2, y3: entero;
+	finvar
+	
+	procedimiento procB(b1: caracter; b2: booleano)
+	inicio
+		inivar
+			xf, x2: real;
+			asdf: real;
+		finvar
+		
+		procedimiento procC(c1: booleano; c2: entero)
+		inicio
+			inivar
+				x1: real;
+			finvar
+			
+			x1 := +-+-+-+1.3;
+			si c2>10+ entonces
+				c2 := c2-1+(6-(2*5)>9)-;
+			sino
+				x1:=3.1;
+		fin;
+		
+		procC(verdad,10);
+		asdf :=xf/10.0;
+		procC(falso,1);
+		procC(verdad,23);
+		
+		mientras x2*xf < 10.0 hacer
+			x2 :=x2*xf;
+		fin
+	fin;
+	
+	procedimiento procD(d1: real)
+	inicio
+		inivar
+			dato: caracter;
+			valor: entero;
+		finvar
+		
+		procedimiento procE(e1: caracter; e2:caracter)
+		inicio
+			leer e1,e2;
+			si e1='a' entonces
+				valor := 5;
+			sino 
+				si e1='b' entonces
+					valor := 5;
+				sino
+					valor := 5;
+		fin;
+		
+		leer valor;
+		si d1>0.0 entonces
+			inicio
+			inivar
+				dato: entero;
+			finvar
+			
+			dato := 2;
+			dato := valor*20/dato;
+			dato := valor * ((10+5 +7/ 5-(2*2))+(6-7/2 > 6+8)+5);
+			fin
+		sino
+			inicio
+			valor := valor*100;
+			d1 := d1/1000.0;
+			fin
+	fin;
+	
+	pe := pe++10; (* inserta 10 en la pila 'pe' *)
+	pf := pf++10.0; (* inserta 10.0 en la pila 'pf' *)
+	pc := pc++'#'; (* inserta # en la pila 'pc' *)
+	
+	si #(pe++20)=20 entonces
+		ve := &pe;
+	sino
+		inicio
+		pe := pe*pe2;
+		pe := pe2 - pe++10 * (20/2000);
+		fin
+fin;
+fin.
