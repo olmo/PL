@@ -35,7 +35,7 @@ typedef struct {
 #define YYSTYPE atributos 		/* A partir de ahora, cada símbolo tiene una estructura de tipo atributos*/
 #define MAX_TS 500
 
-unsigned int TOPE=0 ; 			/* Tope de la pila */
+unsigned int TOPE=0 ; 			/* TOPE de la pila */
 unsigned int Subprog ; 			/* Indicador de comienzo de bloque de un subprog */
 entradaTS TS[MAX_TS] ; 			/* Pila de la tabla de símbolos */
 
@@ -47,12 +47,11 @@ void imprimeTS () {
 	/* Imprime por pantalla la tabla de simbolos */
 	int i;
 	int letra;
-	for (i=0; i<=tope; i++) {
+	for (i=0; i<TOPE; i++) {
 		if (TS[i].tipoentrada==marca)
 			printf ("\n<<< MARCA >>>");
 		if (TS[i].tipoentrada==procedimiento){
 			printf ("\nProcedimiento: %s, Tipo: %d, Num. Parametros: %d", TS[i].lexema, TS[i].tipodato, TS[i].parametros);
-			//printf ("\nProcedimiento: %s, Num. Parametros: %d", TS[i].lexema, TS[i].parametros);
 		}
 		if (TS[i].tipoentrada == variable){
 			printf ("\nVariable: %s, Tipo: %d", TS[i].lexema, TS[i].tipodato);
@@ -118,7 +117,7 @@ void buscar_repetidas(char *lexema) {
 
 	/* Comprobar si ya existe otro con el mismo lexema en el mismo
 	   bloque */
-	for (i=tope; TS[i].tipoentrada != marca; i--){
+	for (i=TOPE; TS[i].tipoentrada != marca; i--){
 		igual = strcmp(TS[i].lexema, lexema);
 
 		if (!igual && TS[i].tipoentrada != parametro) {
@@ -135,7 +134,7 @@ int es_repetida(char *lexema) {
 
 	/* Comprobar si ya existe otro con el mismo lexema en el mismo
 	   bloque */
-	for (i=tope; TS[i].tipoentrada != marca; i--){
+	for (i=TOPE; TS[i].tipoentrada != marca; i--){
 		igual = strcmp(TS[i].lexema, lexema);
 
 		if (!igual && TS[i].tipoentrada != parametro) {
@@ -153,7 +152,7 @@ int existe (char *lexema) {
 	   o 0 en caso contrario */
 	long int temp;
 
-	for (temp=tope; temp>0;temp--)
+	for (temp=TOPE; temp>0;temp--)
 		if (TS[temp].tipoentrada == variable && !strcmp(TS[temp].lexema, lexema))
 			return 1;
 
@@ -162,27 +161,27 @@ int existe (char *lexema) {
 
 void actualizaVector(int d1, int d2, int dim){
 	if(dim==1){
-		TS[tope].ndim=1;
+		TS[TOPE].ndim=1;
 		if(d1<=0){
-			printf ("\nError Semantico en la linea %d: el vector %s debe tener dimensiones positivas\n", yylineno, TS[tope].lexema);
-			tope--;
+			printf ("\nError Semantico en la linea %d: el vector %s debe tener dimensiones positivas\n", yylineno, TS[TOPE].lexema);
+			TOPE--;
 			return;
 		}
 		else{
-			TS[tope].dim1=d1;
+			TS[TOPE].dim1=d1;
 		}
 	
 	}
 	if(dim ==2){
 		if((d1<=0)||(d2<=0)){
-			printf ("\nError Semantico en la linea %d: el vector %s debe tener dimensiones positivas\n", yylineno, TS[tope].lexema);
-			tope--;
+			printf ("\nError Semantico en la linea %d: el vector %s debe tener dimensiones positivas\n", yylineno, TS[TOPE].lexema);
+			TOPE--;
 			return;
 		}
 		else{
-			TS[tope].ndim=2;
-			TS[tope].dim1=d1;
-			TS[tope].dim2=d2;
+			TS[TOPE].ndim=2;
+			TS[TOPE].dim1=d1;
+			TS[TOPE].dim2=d2;
 		}
 	}
 
@@ -191,35 +190,35 @@ void actualizaVector(int d1, int d2, int dim){
 void InsertarElemento(TipoEntrada tipo, char* lexema){
 	//Insertamos un elemento en la tabla de simbolos
 
-	tope++;
-	TS[tope].tipoentrada = tipo;
-	TS[tope].lexema = strdup(lexema);
-	TS[tope].tipodato = no_asignado;
-	TS[tope].vector=0;
-	TS[tope].ndim=0;
+	TOPE++;
+	TS[TOPE].tipoentrada = tipo;
+	TS[TOPE].lexema = strdup(lexema);
+	TS[TOPE].tipodato = no_asignado;
+	TS[TOPE].vector=0;
+	TS[TOPE].ndim=0;
 	if( tipo == procedimiento)
-		TS[tope].parametros = 0;
+		TS[TOPE].parametros = 0;
 	
 }
 
 void esVector(){
-	TS[tope].vector=1;
+	TS[TOPE].vector=1;
 }
 
 void asignarTipo (dTipo tipo) {
-	/* Asigna el tipo especificado al elemento en el tope de la TS*/
-	TS[tope].tipodato = tipo;
-	if((tipo==entero)&&(TS[tope].vector==1)){
-		TS[tope].tipodato = vector_entero;
+	/* Asigna el tipo especificado al elemento en el TOPE de la TS*/
+	TS[TOPE].tipodato = tipo;
+	if((tipo==entero)&&(TS[TOPE].vector==1)){
+		TS[TOPE].tipodato = vector_entero;
 	}
-	if((tipo==flotante)&&(TS[tope].vector==1)){
-		TS[tope].tipodato = vector_flotante;
+	if((tipo==flotante)&&(TS[TOPE].vector==1)){
+		TS[TOPE].tipodato = vector_flotante;
 	}
-	if((tipo==boleano)&&(TS[tope].vector==1)){
-		TS[tope].tipodato = vector_boleano;
+	if((tipo==boleano)&&(TS[TOPE].vector==1)){
+		TS[TOPE].tipodato = vector_boleano;
 	}
-	if((tipo==caracter)&&(TS[tope].vector==1)){
-		TS[tope].tipodato = vector_caracter;
+	if((tipo==caracter)&&(TS[TOPE].vector==1)){
+		TS[TOPE].tipodato = vector_caracter;
 	}		
 	
 }
@@ -230,7 +229,7 @@ void asignarTipoCascada(dTipo tipo) {
 
 	int i;
 
-	for (i=tope; TS[i].tipoentrada==variable && TS[i].tipodato == no_asignado; i--){
+	for (i=TOPE; TS[i].tipoentrada==variable && TS[i].tipodato == no_asignado; i--){
 		TS[i].tipodato = tipo;
 		if((tipo==entero)&&(TS[i].vector==1)){
 			TS[i].tipodato = vector_entero;
@@ -256,7 +255,7 @@ void BuscarParametroRepetido (char *lexema) {
 	int i;
 	int igual= 0;
 
-	for (i=tope; TS[i].tipoentrada != procedimiento; i--){
+	for (i=TOPE; TS[i].tipoentrada != procedimiento; i--){
 		igual = strcmp(TS[i].lexema, lexema);
 		if (!igual) {
 			printf ("\nError Semantico en la linea %d: Parametro %s esta duplicado\n", yylineno, lexema);
@@ -272,7 +271,7 @@ int BuscarParametroRepetido2 (char *lexema){
 	int i;
 	int igual= 0;
 
-	for (i=tope; TS[i].tipoentrada != procedimiento; i--){
+	for (i=TOPE; TS[i].tipoentrada != procedimiento; i--){
 		igual = strcmp(TS[i].lexema, lexema);
 		if (!igual) {
 			printf ("\nError Semantico en la linea %d: Parametro %s esta duplicado\n", yylineno, lexema);
@@ -288,7 +287,7 @@ void CuentaParametros () {
 	int i;
 	int parametros=0;
 
-	for (i=tope;TS[i].tipoentrada != procedimiento;i--)
+	for (i=TOPE;TS[i].tipoentrada != procedimiento;i--)
 		if (TS[i].tipoentrada == parametro) {
 			parametros++;
 		}
@@ -304,10 +303,10 @@ void IntroIniBloq() {
 	/* y copia los parametros del procedimiento como si
 	   fueran variables */
 	int i;
-	tope++;
+	TOPE++;
 
-	TS[tope].tipoentrada = marca;
-	for (i=tope-1; i>=0 && TS[i].tipoentrada != marca && TS[i].tipoentrada != procedimiento; i--)
+	TS[TOPE].tipoentrada = marca;
+	for (i=TOPE-1; i>=0 && TS[i].tipoentrada != marca && TS[i].tipoentrada != procedimiento; i--)
 		if (TS[i].tipoentrada == parametro) {
 			/* Hemos encontrado un parametro, incluirlo como variable */
 			InsertarElemento (variable, TS[i].lexema);
@@ -325,9 +324,9 @@ void IntroFinBloq () {
 	    una marca de comienzo de bloque o se queda la tabla de simbolos
 	   vacia */
 
-	for (;tope>=0 && TS[tope].tipoentrada!=marca;tope--);
-	if (tope!=0)
-		tope--;
+	for (;TOPE>=0 && TS[TOPE].tipoentrada!=marca;TOPE--);
+	if (TOPE!=0)
+		TOPE--;
 	//MostrarTS();
 	
 }
@@ -336,7 +335,7 @@ void existeProc (char *lexema) {
 /*comprueba que existe un nombre de procedimiento declarado igual al que se le pasa*/
 	int i;
 	int igual=0;
-	for (i=tope+1; i>=0 && TS[tope].tipoentrada!=marca; i--)
+	for (i=TOPE+1; i>=0 && TS[TOPE].tipoentrada!=marca; i--)
 		if (TS[i].tipoentrada == procedimiento && !strcmp(TS[i].lexema, lexema))
 			igual=1;
 
@@ -349,7 +348,7 @@ int existeProc2 (char *lexema) {
 /*comprueba que existe un nombre de procedimiento declarado igual al que se le pasa*/
 	int i;
 	int igual=0;
-	for (i=tope+1; i>=0 && TS[tope].tipoentrada!=marca; i--)
+	for (i=TOPE+1; i>=0 && TS[TOPE].tipoentrada!=marca; i--)
 		if (TS[i].tipoentrada == procedimiento && !strcmp(TS[i].lexema, lexema))
 			igual=1;
 	return igual;
@@ -358,7 +357,7 @@ int existeProc2 (char *lexema) {
 int numParametros(char* lexema){
 	int i;
 	int igual=0;
-	for (i=tope+1; i>=0; i--)
+	for (i=TOPE+1; i>=0; i--)
 		if (TS[i].tipoentrada == procedimiento && !strcmp(TS[i].lexema, lexema)){
 			return TS[i].parametros;
 		}
@@ -369,7 +368,7 @@ int numParametros(char* lexema){
 dTipo tipoParametro(int num, char* lexema){
 	int i;
 	int igual=0;
-	for (i=tope; i>=0; i--)
+	for (i=TOPE; i>=0; i--)
 		if (TS[i].tipoentrada == procedimiento && !strcmp(TS[i].lexema, lexema)){
 			return (TS[i+num].tipodato);
 		}
@@ -378,7 +377,7 @@ dTipo tipoParametro(int num, char* lexema){
 int dimParametro(int num, char* lexema){
 	int i;
 	int igual=0;
-	for (i=tope; i>=0; i--)
+	for (i=TOPE; i>=0; i--)
 		if (TS[i].tipoentrada == procedimiento && !strcmp(TS[i].lexema, lexema)){
 			return (TS[i+num].ndim);
 		}
@@ -387,7 +386,7 @@ int dimParametro(int num, char* lexema){
 int d1Parametro(int num, char* lexema){
 	int i;
 	int igual=0;
-	for (i=tope; i>=0; i--)
+	for (i=TOPE; i>=0; i--)
 		if (TS[i].tipoentrada == procedimiento && !strcmp(TS[i].lexema, lexema)){
 			return (TS[i+num].dim1);
 		}
@@ -396,7 +395,7 @@ int d1Parametro(int num, char* lexema){
 int d2Parametro(int num, char* lexema){
 	int i;
 	int igual=0;
-	for (i=tope; i>=0; i--)
+	for (i=TOPE; i>=0; i--)
 		if (TS[i].tipoentrada == procedimiento && !strcmp(TS[i].lexema, lexema)){
 			return (TS[i+num].dim2);
 		}
@@ -408,7 +407,7 @@ int get_dim (char *lexema) {
 	    */
 	long int temp;
 
-	for (temp=tope; temp>0 && TS[tope].tipoentrada!=marca;temp--)
+	for (temp=TOPE; temp>0 && TS[TOPE].tipoentrada!=marca;temp--)
 		if (TS[temp].tipoentrada == variable && !strcmp(TS[temp].lexema, lexema))
 			return TS[temp].ndim;
 
@@ -420,7 +419,7 @@ int get_d1 (char *lexema) {
 	    */
 	long int temp;
 
-	for (temp=tope; temp>0 && TS[tope].tipoentrada!=marca;temp--)
+	for (temp=TOPE; temp>0 && TS[TOPE].tipoentrada!=marca;temp--)
 		if (TS[temp].tipoentrada == variable && !strcmp(TS[temp].lexema, lexema))
 			return TS[temp].dim1;
 
@@ -432,7 +431,7 @@ int get_d2 (char *lexema) {
 	    */
 	long int temp;
 
-	for (temp=tope; temp>0 && TS[tope].tipoentrada!=marca;temp--)
+	for (temp=TOPE; temp>0 && TS[TOPE].tipoentrada!=marca;temp--)
 		if (TS[temp].tipoentrada == variable && !strcmp(TS[temp].lexema, lexema))
 			return TS[temp].dim2;
 
@@ -445,7 +444,7 @@ dTipo get_tipo (char *lexema) {
 	    */
 	long int temp;
 
-	for (temp=tope; temp>0 && TS[tope].tipoentrada!=marca;temp--)
+	for (temp=TOPE; temp>0 && TS[TOPE].tipoentrada!=marca;temp--)
 		if (TS[temp].tipoentrada == variable && !strcmp(TS[temp].lexema, lexema))
 			return TS[temp].tipodato;
 }
