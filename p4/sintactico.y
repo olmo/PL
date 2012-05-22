@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "tablaSimbolos.h"
 
 /**  La siguiente declaracion permite que 'yyerror' se pueda invocar desde el 
 ***  fuente de lex (prueba.l)
@@ -17,6 +18,15 @@ void yyerror( char * msg ) ;
 **/
 
 int linea_actual = 1 ;
+dtipo tipoPorAsignar;
+int pila=0;
+int argumentos =1;
+int correcto=1;
+char *nomproc;
+int numparam=0;
+
+dtipo tipo_pila;		//Diferente al nombre del procedimiento tipoPila
+int pilaError = 0;
 %}
 
 /**  Para uso de mensajes de error sintáctico con BISON.
@@ -87,7 +97,7 @@ int linea_actual = 1 ;
 
 programa : PROGRAMA bloque PUNTO;
 
-bloque : INICIO declar_de_variables_locales declar_de_subprogs sentencias FIN;
+bloque : INICIO {IntroIniBloq();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 

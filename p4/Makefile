@@ -6,9 +6,9 @@ y.tab.o: y.tab.c
 main.o: main.c
 	gcc -c main.c
 y.tab.c: sintactico.y lex.yy.c
-	bison -v --report=all --report-file=reportBison.txt -o y.tab.c sintactico.y 
+	bison -t -o y.tab.c sintactico.y 
 lex.yy.c: lexico.l
-	flex lexico.l
+	flex -l lexico.l
 limpia:
 	rm -f prueba main.o y.tab.o y.tab.c lex.yy.c
 todo:
