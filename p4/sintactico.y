@@ -97,7 +97,7 @@ int pilaError = 0;
 **/
 
 
-programa : PROGRAMA bloque PUNTO {imprimeTS();};
+programa : PROGRAMA {printf("HOLA\n");} bloque PUNTO {imprimeTS();};
 
 bloque : INICIO {IntroIniBloq();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
 		
@@ -124,7 +124,7 @@ lista_identificador : | COMA IDENTIFICADOR lista_identificador {if(es_repetida($
 
 cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ {
 								if(es_repetida($2.lexema)==0){
-									InsertarElemento(procedimiento,$2.lexema);asignarTipo (vacio);
+									InsertarElemento(procedimiento,$2.lexema);asignarTipo (desconocido, TOPE);
 								} 
 							}
 						variables_subprograma {CuentaParametros ();} PARDER;
@@ -159,14 +159,14 @@ sentencia_asignacion : ASIGNACION expresion PUNTOCOMA {
 	};
 
 sentencia_if : SI expresion {
-					if($2.tipo!=boleano){
-						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($3.tipo));
+					if($2.tipo!=booleano){
+						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($2.tipo));
 					}
 				}
 			ENTONCES sentencia SINO sentencia 
 			| SI expresion {
-					if($2.tipo!=boleano){
-						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($3.tipo));
+					if($2.tipo!=booleano){
+						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($2.tipo));
 					}
 				}
 			ENTONCES sentencia;
@@ -180,8 +180,8 @@ lista_sentencia_switch : | lista_variables_switch DOSPUNTOS sentencia lista_sent
 lista_variables_switch: lista_variables | CONSTANTE lista_constantes;
 
 sentencia_while : MIENTRAS expresion {
-						if($2.tipo!=boleano){
-							printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($3.tipo));
+						if($2.tipo!=booleano){
+							printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($2.tipo));
 						}
 					}
 				HACER sentencia FIN;
