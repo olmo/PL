@@ -24,6 +24,8 @@ int argumentos =1;
 int correcto=1;
 char *nomproc;
 int numparam=0;
+char *iden;
+dtipo iden_tipo;
 
 dtipo tipo_pila;		//Diferente al nombre del procedimiento tipoPila
 int pilaError = 0;
@@ -95,7 +97,7 @@ int pilaError = 0;
 **/
 
 
-programa : PROGRAMA bloque PUNTO;
+programa : PROGRAMA bloque PUNTO {imprimeTS();};
 
 bloque : INICIO {IntroIniBloq();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
 		
@@ -111,11 +113,21 @@ cuerpo_declar_variables : lista_variables DOSPUNTOS tipo opcion_asign_variable P
 
 opcion_asign_variable : ASIGNACION expresion | ;
 
-lista_variables : IDENTIFICADOR lista_identificador | error;
+lista_variables : IDENTIFICADOR lista_identificador {if(es_repetida($1.lexema)==0){
+														InsertarElemento(variable, $1.lexema);} 
+													}
+				| error;
 
-lista_identificador : | COMA IDENTIFICADOR lista_identificador;
+lista_identificador : | COMA IDENTIFICADOR lista_identificador {if(es_repetida($2.lexema)==0){
+														InsertarElemento(variable, $2.lexema);} 
+													};
 
-cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ variables_subprograma PARDER;
+cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ {
+								if(es_repetida($2.lexema)==0){
+									InsertarElemento(procedimiento,$2.lexema);asignarTipo (vacio);
+								} 
+							}
+						variables_subprograma {CuentaParametros ();} PARDER;
 
 variables_subprograma : | lista_variables DOSPUNTOS tipo lista_variables_subprograma | error;
 
@@ -125,15 +137,39 @@ sentencias : | sentencias sentencia;
 
 sentencia : bloque | asignacion_procedimiento | sentencia_if | sentencia_switch | sentencia_while | sentencia_entrada | sentencia_salida | error;
 
-asignacion_procedimiento: IDENTIFICADOR procedimientoOasignacion;
+asignacion_procedimiento: IDENTIFICADOR procedimientoOasignacion {iden = $1.lexema;};
 
 procedimientoOasignacion: llamada_procedimiento | sentencia_asignacion;
 
 llamada_procedimiento : PARIZQ lista_expresiones_o_cadena PARDER PUNTOCOMA;
 
-sentencia_asignacion : ASIGNACION expresion PUNTOCOMA;
+sentencia_asignacion : ASIGNACION expresion PUNTOCOMA {
+		
+		if(existe (iden)==0){
+			printf ("\nError Semantico en la linea %d: Identificador %s no esta declarado\n", yylineno, $1.lexema);}
+		else{
+			iden_tipo=get_tipo (iden);
+			
+			if(iden_tipo!=$3.tipo)
+				printf ("\nError Semantico en la linea %d: Asignacion de tipos incompatibles, no se puede asignar un %s aun %s\n", yylineno,MostrarTipo($3.tipo),MostrarTipo(iden_tipo));
+			else{
+				//Comprobar pila
+			}
+		}
+	};
 
-sentencia_if : SI expresion ENTONCES sentencia SINO sentencia | SI expresion ENTONCES sentencia;
+sentencia_if : SI expresion {
+					if($2.tipo!=boleano){
+						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($3.tipo));
+					}
+				}
+			ENTONCES sentencia SINO sentencia 
+			| SI expresion {
+					if($2.tipo!=boleano){
+						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($3.tipo));
+					}
+				}
+			ENTONCES sentencia;
 
 sentencia_switch : CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN;
 
@@ -143,7 +179,12 @@ lista_sentencia_switch : | lista_variables_switch DOSPUNTOS sentencia lista_sent
 
 lista_variables_switch: lista_variables | CONSTANTE lista_constantes;
 
-sentencia_while : MIENTRAS expresion HACER sentencia FIN;
+sentencia_while : MIENTRAS expresion {
+						if($2.tipo!=boleano){
+							printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($3.tipo));
+						}
+					}
+				HACER sentencia FIN;
 
 sentencia_entrada : LEER lista_variables PUNTOCOMA;
 
@@ -159,7 +200,7 @@ agregado : LLAVEIZQ CONSTANTE lista_constantes LLAVEDER;
 
 lista_constantes : | COMA CONSTANTE lista_constantes;
 
-tipo : TIPOSIMPLE | PILA TIPOSIMPLE;
+tipo : TIPOSIMPLE {asignarTipoCascada($1.tipo);} | PILA TIPOSIMPLE {esPila();asignarTipoCascada($1.tipo);};
 
 %%
 /** aqui incluimos el fichero generado por el 'lex'

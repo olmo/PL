@@ -1,8 +1,8 @@
 programa
 inicio
 inivar
-	a b,c,ve: entero
-	e,f g,vf: real;
+	a, b, c, ve: entero;
+	e, f, g, vf: real;
 	vc: caracter;
 	vl: booleano;
 	pe, pe2: p··ila entero;
@@ -31,9 +31,9 @@ inicio
 				x1: real;
 			finvar
 			
-			x1 := +-+-+-+1.3;
+			x1 := 1.3;
 			si c2>10+ entonces
-				c2 := c2-1+(6-(2*5)>9)-;
+				c2 := c2-1+(6-(2*5)>9);
 			sino
 				x1:=3.1;
 		fin;
