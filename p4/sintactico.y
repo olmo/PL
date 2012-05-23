@@ -416,7 +416,7 @@ expresion : PARIZQ expresion PARDER {
 		
 		| CONSTANTE {$$.tipo = $1.tipo;}
 		
-		| agregado 
+		| agregado {$$.tipo = tipoEnPila($1.tipo);}
 		
 		| SIGNO expresion %prec OPUNARIO {
 				if($2.tipo!=entero && $2.tipo!=real){
@@ -428,14 +428,14 @@ expresion : PARIZQ expresion PARDER {
 		
 		| error;
 
-agregado : LLAVEIZQ CONSTANTE {$$.tipo = $2.tipo;} lista_constantes {if($3.tipo != $2.tipo)
-		printf("Error Semantico en la linea %d: La constante %s tiene un tipo diferente al resto del agregado\n", yylineno, $2.lexema);
-	} LLAVEDER;
+agregado : LLAVEIZQ CONSTANTE {tipo_pila = $2.tipo;} lista_constantes LLAVEDER {$$.tipo = tipo_pila;};
 
-lista_constantes : | COMA CONSTANTE {$$.tipo = $2.tipo;} lista_constantes{
-	if($3.tipo != $2.tipo)
+lista_constantes : | COMA CONSTANTE{ 
+	if($2.tipo != tipo_pila)
 		printf("Error Semantico en la linea %d: La constante %s tiene un tipo diferente al resto de constantes\n", yylineno, $2.lexema);
-	}
+	}lista_constantes
+	
+	;
 
 tipo : TIPOSIMPLE {asignarTipoCascada($1.tipo);} | PILA TIPOSIMPLE {esPila();asignarTipoCascada($2.tipo);};
 

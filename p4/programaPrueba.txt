@@ -5,7 +5,7 @@ inivar
 	e, f, g, vf: real;
 	vc: caracter;
 	vl: booleano;
-	pe, pe2: pila entero := {5,verdad,7,8};
+	pe, pe2: pila entero;
 	pf, pf2: pila real;
 	pc, pc2: pila caracter;
 	pl: pila booleano;
@@ -99,6 +99,7 @@ inicio
 		inicio
 		ve := #pe;
 		pe := &pe;
+		pe := {1,2,3,4,5,6.0};
 		fin
 	sino
 		inicio
