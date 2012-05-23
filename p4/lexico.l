@@ -38,73 +38,73 @@ otros    		.
 " "					{}
 \t					{}
 
-(\(\*[^\*\)]*\*\))		{printf ("COMENTARIOS "); linea_actual+=countNewLines(yytext);}
+(\(\*[^\*\)]*\*\))		{ linea_actual+=countNewLines(yytext);}
 
 
-"Y"						{printf ("OPBINARIO-Y "); yylval.lexema=strdup(yytext); return OP_AND;}
-"O"						{printf ("OPBINARIO-O "); yylval.lexema=strdup(yytext); return OP_OR;}
-"="        				{printf ("OPBINARIO-= "); yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_IGUALDAD;}
-"<>"					{printf ("OPBINARIO-<> "); yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_IGUALDAD;}
-"<"						{printf ("OPBINARIO-< "); yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
-">"						{printf ("OPBINARIO-> "); yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
-"<="					{printf ("OPBINARIO-<= "); yylval.atrib=2; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
-">="					{printf ("OPBINARIO->= "); yylval.atrib=3; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
-"*"						{printf ("OPBINARIO-* "); yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_MULDIV;}
-"/"						{printf ("OPBINARIO-/ "); yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_MULDIV;}
-"div"					{printf ("OPBINARIO-div "); yylval.atrib=2; yylval.lexema=strdup(yytext); return OP_MULDIV;}
+"Y"						{ yylval.lexema=strdup(yytext); return OP_AND;}
+"O"						{ yylval.lexema=strdup(yytext); return OP_OR;}
+"="        				{ yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_IGUALDAD;}
+"<>"					{ yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_IGUALDAD;}
+"<"						{ yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
+">"						{ yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
+"<="					{ yylval.atrib=2; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
+">="					{ yylval.atrib=3; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
+"*"						{ yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_MULDIV;}
+"/"						{ yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_MULDIV;}
+"div"					{ yylval.atrib=2; yylval.lexema=strdup(yytext); return OP_MULDIV;}
 
-"no"					{printf ("OPUNARIO-no "); yylval.atrib=0; yylval.lexema=strdup(yytext); return OPUNARIO;}
-"&"						{printf ("OPUNARIO-& "); yylval.atrib=1; yylval.lexema=strdup(yytext); return OPUNARIO;}
-"#"						{printf ("OPUNARIO-# "); yylval.atrib=2; yylval.lexema=strdup(yytext); return OPUNARIO;}
-"!"						{printf ("OPUNARIO-! "); yylval.atrib=3; yylval.lexema=strdup(yytext); return OPUNARIO;}
+"no"					{ yylval.atrib=0; yylval.lexema=strdup(yytext); return OPUNARIO;}
+"&"						{ yylval.atrib=1; yylval.lexema=strdup(yytext); return OPUNARIO;}
+"#"						{ yylval.atrib=2; yylval.lexema=strdup(yytext); return OPUNARIO;}
+"!"						{ yylval.atrib=3; yylval.lexema=strdup(yytext); return OPUNARIO;}
 
-"entero"			    {printf ("TIPOSIMPLE-entero "); yylval.atrib=0; yylval.tipo=entero; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
-"real"					{printf ("TIPOSIMPLE-real "); yylval.atrib=1; yylval.tipo=real; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
-"booleano"				{printf ("TIPOSIMPLE-bool "); yylval.atrib=2; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
-"caracter"				{printf ("TIPOSIMPLE-caracter "); yylval.atrib=3; yylval.tipo=caracter; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"entero"			    { yylval.atrib=0; yylval.tipo=entero; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"real"					{ yylval.atrib=1; yylval.tipo=real; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"booleano"				{ yylval.atrib=2; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"caracter"				{ yylval.atrib=3; yylval.tipo=caracter; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
 
-{signo}					{printf ("SIGNO "); yylval.lexema=strdup(yytext); return SIGNO;}
+{signo}					{ yylval.lexema=strdup(yytext); return SIGNO;}
 
-"("						{printf ("PARIZQ ");return PARIZQ;}
-")"						{printf ("PARDER ");return PARDER;}
-"{"						{printf ("LLAVEIZQ ");return LLAVEIZQ;}
-"}"						{printf ("LLAVEDER ");return LLAVEDER;}
+"("						{return PARIZQ;}
+")"						{return PARDER;}
+"{"						{return LLAVEIZQ;}
+"}"						{return LLAVEDER;}
 
-","						{printf ("COMA ");return COMA;}
-";"						{printf ("PUNTOCOMA ");return PUNTOCOMA;}
-"."						{printf("PUNTO\n"); return PUNTO;}
-":"						{printf ("DOSPUNTOS ");return DOSPUNTOS;}
-"si"					{printf ("SI ");return SI;}
-"sino"					{printf ("SINO ");return SINO;}
-"mientras"				{printf ("MIENTRAS ");return MIENTRAS;}
-"leer"					{printf ("LEER ");return LEER;}
-"escribir"				{printf ("ESCRIBIR ");return ESCRIBIR;}
-":="					{printf ("ASIGNADOR "); yylval.lexema=strdup(yytext); return ASIGNADOR;}
-"programa"				{printf ("PROGRAMA ");return PROGRAMA;}
-"inicio"				{printf ("INICIO ");return INICIO;}
-"fin"					{printf ("FIN ");return FIN;}
-"hacer"					{printf ("HACER ");return HACER;}
-"procedimiento"			{printf ("PROCEDIMIENTO ");return PROCEDIMIENTO;}
-"inivar"				{printf ("INIVAR ");return INIVAR;}
-"finvar"				{printf ("FINVAR ");return FINVAR;}
-"caso"					{printf ("CASO ");return CASO;}
-"de"					{printf ("DE ");return DE;}
-"entonces"				{printf ("ENTONCES ");return ENTONCES;}
-"pila"					{printf ("PILA "); yylval.lexema=strdup(yytext); return PILA;}
+","						{return COMA;}
+";"						{return PUNTOCOMA;}
+"."						{return PUNTO;}
+":"						{return DOSPUNTOS;}
+"si"					{return SI;}
+"sino"					{return SINO;}
+"mientras"				{return MIENTRAS;}
+"leer"					{return LEER;}
+"escribir"				{return ESCRIBIR;}
+":="					{ yylval.lexema=strdup(yytext); return ASIGNADOR;}
+"programa"				{return PROGRAMA;}
+"inicio"				{return INICIO;}
+"fin"					{return FIN;}
+"hacer"					{return HACER;}
+"procedimiento"			{return PROCEDIMIENTO;}
+"inivar"				{return INIVAR;}
+"finvar"				{return FINVAR;}
+"caso"					{return CASO;}
+"de"					{return DE;}
+"entonces"				{return ENTONCES;}
+"pila"					{ yylval.lexema=strdup(yytext); return PILA;}
 
-\"[^\"]*\"				{printf("CADENA "); yylval.tipo=cadena; yylval.lexema=strdup(yytext); return CADENA;}
+\"[^\"]*\"				{yylval.tipo=cadena; yylval.lexema=strdup(yytext); return CADENA;}
 
-"verdad"				{printf ("CONSTANTE-verdad "); yylval.atrib=0; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return CONSTANTE;}
-"falso"					{printf ("CONSTANTE-falso "); yylval.atrib=1; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return CONSTANTE;}
+"verdad"				{ yylval.atrib=0; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return CONSTANTE;}
+"falso"					{ yylval.atrib=1; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return CONSTANTE;}
 
-{entero}				{printf("CONSTANTE-entero "); yylval.atrib=2; yylval.tipo=entero; yylval.lexema=strdup(yytext); return CONSTANTE;}
-{real}					{printf("CONSTANTE-real "); yylval.atrib=3; yylval.tipo=real; yylval.lexema=strdup(yytext); return CONSTANTE;}
-{caracter}				{printf("CONSTANTE-caracter "); yylval.atrib=4; yylval.tipo=caracter; yylval.lexema=strdup(yytext); return CONSTANTE;}
+{entero}				{yylval.atrib=2; yylval.tipo=entero; yylval.lexema=strdup(yytext); return CONSTANTE;}
+{real}					{yylval.atrib=3; yylval.tipo=real; yylval.lexema=strdup(yytext); return CONSTANTE;}
+{caracter}				{yylval.atrib=4; yylval.tipo=caracter; yylval.lexema=strdup(yytext); return CONSTANTE;}
 
 
-({letra}|"_")({letra}|{numero})* {printf ("IDENTIFICADOR "); yylval.lexema= strdup(yytext); return IDENTIFICADOR;}
+({letra}|"_")({letra}|{numero})* { yylval.lexema= strdup(yytext); return IDENTIFICADOR;}
 
-\n						{++linea_actual; printf ("\n%d  ", linea_actual);}
+\n						{++linea_actual;}
 {otros}					{printf("\n(Linea %d) Error léxico: token %s\n", yylineno, yytext);}
 
 %%
