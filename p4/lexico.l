@@ -58,10 +58,10 @@ otros    		.
 "#"						{printf ("OPUNARIO-# "); yylval.atrib=2; yylval.lexema=strdup(yytext); return OPUNARIO;}
 "!"						{printf ("OPUNARIO-! "); yylval.atrib=3; yylval.lexema=strdup(yytext); return OPUNARIO;}
 
-"entero"			    {printf ("TIPOSIMPLE-entero "); yylval.atrib=0; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
-"real"					{printf ("TIPOSIMPLE-real "); yylval.atrib=1; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
-"booleano"				{printf ("TIPOSIMPLE-bool "); yylval.atrib=2; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
-"caracter"				{printf ("TIPOSIMPLE-caracter "); yylval.atrib=3; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"entero"			    {printf ("TIPOSIMPLE-entero "); yylval.atrib=0; yylval.tipo=entero; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"real"					{printf ("TIPOSIMPLE-real "); yylval.atrib=1; yylval.tipo=real; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"booleano"				{printf ("TIPOSIMPLE-bool "); yylval.atrib=2; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
+"caracter"				{printf ("TIPOSIMPLE-caracter "); yylval.atrib=3; yylval.tipo=caracter; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
 
 {signo}					{printf ("SIGNO "); yylval.lexema=strdup(yytext); return SIGNO;}
 
