@@ -53,7 +53,7 @@ void imprimeTS () {
 	/* Imprime por pantalla la tabla de simbolos */
 	int i;
 	int letra;
-	for (i=0; i<TOPE; i++) {
+	for (i=0; i<=TOPE; i++) {
 		if (TS[i].entrada==marca)
 			printf ("\n<<< MARCA >>>");
 		if (TS[i].entrada==procedimiento){
@@ -196,7 +196,7 @@ void asignarTipoCascada(dtipo tipo) {
 
 	int i;
 
-	for (i=TOPE; TS[i].entrada==variable && TS[i].tipoDato == no_asignado; i--){
+	for (i=TOPE; (TS[i].entrada==variable || TS[i].entrada==parametro) && TS[i].tipoDato == no_asignado; i--){
 		asignarTipo(tipo, i);
 		
 	}

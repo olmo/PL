@@ -99,7 +99,7 @@ int pilaError = 0;
 
 programa : PROGRAMA bloque PUNTO {imprimeTS();};
 
-bloque : INICIO {IntroIniBloq();} declar_de_variables_locales  declar_de_subprogs sentencias FIN {IntroFinBloq();};
+bloque : INICIO {IntroIniBloq();} declar_de_variables_locales {imprimeTS();}  declar_de_subprogs {imprimeTS();} sentencias FIN {IntroFinBloq();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
@@ -129,9 +129,19 @@ cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ {
 							}
 						variables_subprograma {CuentaParametros ();} PARDER;
 
-variables_subprograma : | lista_variables DOSPUNTOS tipo lista_variables_subprograma | error;
+variables_subprograma : | lista_parametros DOSPUNTOS tipo lista_variables_subprograma | error;
 
-lista_variables_subprograma : | PUNTOCOMA lista_variables DOSPUNTOS tipo lista_variables_subprograma | error;
+													
+lista_variables_subprograma : | PUNTOCOMA lista_parametros DOSPUNTOS tipo lista_variables_subprograma | error;
+
+lista_parametros : IDENTIFICADOR lista_identificador_parametros {if(es_repetida($1.lexema)==0){
+														InsertarElemento(parametro, $1.lexema);} 
+													}
+				| error;
+
+lista_identificador_parametros : | COMA IDENTIFICADOR lista_identificador_parametros {if(es_repetida($2.lexema)==0){
+														InsertarElemento(parametro, $2.lexema);} 
+													};
 
 sentencias : | sentencias sentencia;
 
@@ -151,7 +161,7 @@ sentencia_asignacion : ASIGNACION expresion PUNTOCOMA {
 			iden_tipo=get_tipo (iden);
 			
 			if(iden_tipo!=$3.tipo)
-				printf ("\nError Semantico en la linea %d: Asignacion de tipos incompatibles, no se puede asignar un %s aun %s\n", yylineno,MostrarTipo($3.tipo),MostrarTipo(iden_tipo));
+				printf ("\nError Semantico en la linea %d: Asignacion de tipos incompatibles, no se puede asignar un %s a un %s\n", yylineno,MostrarTipo($3.tipo),MostrarTipo(iden_tipo));
 			else{
 				//Comprobar pila
 			}
