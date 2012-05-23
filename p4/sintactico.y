@@ -204,13 +204,9 @@ sentencia_if : SI expresion {
 						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($2.tipo));
 					}
 				}
-			ENTONCES sentencia SINO sentencia 
-			| SI expresion {
-					if($2.tipo!=booleano){
-						printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($2.tipo));
-					}
-				}
-			ENTONCES sentencia;
+			ENTONCES sentencia sentencia_else;
+			
+sentencia_else : | SINO sentencia;
 
 sentencia_switch : CASO IDENTIFICADOR {
 	if ($2.tipo != entero || $2.tipo != real || $2.tipo != caracter || $2.tipo != booleano)
