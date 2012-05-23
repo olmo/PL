@@ -101,7 +101,7 @@ int pilaError = 0;
 
 programa : PROGRAMA bloque PUNTO;
 
-bloque : INICIO {IntroIniBloq();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
+bloque : INICIO {IntroIniBloq();imprimeTS();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
@@ -314,10 +314,10 @@ expresion : PARIZQ expresion PARDER {
 				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
 						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($1.tipo) ==1 && tipoPila($1.tipo) != $3.tipo){
-					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo)==0 && tipoPila($1.tipo) != $3.tipo){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles . \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
+				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
 				}
@@ -330,10 +330,10 @@ expresion : PARIZQ expresion PARDER {
 				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
 						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($1.tipo) ==1 && tipoPila($1.tipo) != $3.tipo){
-					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo)==0 && tipoPila($1.tipo) != $3.tipo){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles . \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
+				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
 				}

@@ -90,7 +90,8 @@ inicio
 	pc := pc++'#'; (* inserta # en la pila 'pc' *)
 	
 	si #(pe++20)=20 entonces
-		ve := &pe;
+		ve := #pe;
+		&pe;
 	sino
 		inicio
 		pe := pe*pe2;
