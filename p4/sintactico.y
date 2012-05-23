@@ -101,7 +101,7 @@ int pilaError = 0;
 
 programa : PROGRAMA bloque PUNTO;
 
-bloque : INICIO {IntroIniBloq();imprimeTS();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
+bloque : INICIO {IntroIniBloq();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
@@ -405,7 +405,10 @@ expresion : PARIZQ expresion PARDER {
 				correcto=1;
 			}
 		
-		| IDENTIFICADOR {$$.tipo = get_tipo($1.lexema);}
+		| IDENTIFICADOR {
+			if(existe($1.lexema)==0)
+				printf("\nError Semantico en la linea %d: El identificador %s no esta declarado\n", yylineno, $1.lexema);
+			else $$.tipo = get_tipo($1.lexema);}
 		
 		| CONSTANTE {$$.tipo = $1.tipo;}
 		
