@@ -50,30 +50,6 @@ int yylineno;					/* Numero de linea */
 /*********************  FUNCIONES TABLA SIMBOLOS  ****************************************+
 *******************************************************************************************/
 
-void imprimeTS () {
-	/* Imprime por pantalla la tabla de simbolos */
-	int i;
-	int letra;
-	for (i=0; i<=TOPE; i++) {
-		if (TS[i].entrada==marca)
-			printf ("\n<<< MARCA >>>");
-		if (TS[i].entrada==procedimiento){
-			printf ("\nProcedimiento: %s, Tipo: %d, Num. Parametros: %d", TS[i].nombre, TS[i].tipoDato, TS[i].parametros);
-		}
-		if (TS[i].entrada == variable){
-			printf ("\nVariable: %s, Tipo: %d", TS[i].nombre, TS[i].tipoDato);
-		}
-			
-		if (TS[i].entrada==parametro)
-			printf ("\nParametro: %s, Tipo: %d", TS[i].nombre, TS[i].tipoDato);
-	}
-
-	printf ("\n");
-	getchar();
-
-	printf("********************************************************************");
-}
-
 
 
 char* MostrarTipo(dtipo tipo){
@@ -106,6 +82,30 @@ char* MostrarTipo(dtipo tipo){
 	if(tipo == 10)
 		return(" no asignado ");
 
+}
+
+void imprimeTS () {
+	/* Imprime por pantalla la tabla de simbolos */
+	int i;
+	int letra;
+	for (i=0; i<=TOPE; i++) {
+		if (TS[i].entrada==marca)
+			printf ("\n<<< MARCA >>>");
+		if (TS[i].entrada==procedimiento){
+			printf ("\nProcedimiento: %s, Tipo: %d, Num. Parametros: %d", TS[i].nombre, TS[i].tipoDato, TS[i].parametros);
+		}
+		if (TS[i].entrada == variable){
+			printf ("\nVariable: %s, Tipo: %s", TS[i].nombre, MostrarTipo(TS[i].tipoDato));
+		}
+			
+		if (TS[i].entrada==parametro)
+			printf ("\nParametro: %s, Tipo: %s", TS[i].nombre,MostrarTipo(TS[i].tipoDato));
+	}
+
+	printf ("\n");
+	getchar();
+
+	printf("********************************************************************");
 }
 
 void buscar_repetidas(char *lexema) {

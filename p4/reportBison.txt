@@ -1,0 +1,2329 @@
+Estado 116 conflictos: 1 desplazamiento(s)/reducción(ones)
+
+
+Gramática
+
+    0 $accept: programa $end
+
+    1 programa: PROGRAMA bloque PUNTO
+
+    2 $@1: /* vacío */
+
+    3 bloque: INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+
+    4 declar_de_subprogs: /* vacío */
+    5                   | declar_de_subprogs declar_subprog
+
+    6 declar_subprog: cabecera_subprograma bloque PUNTOCOMA
+
+    7 declar_de_variables_locales: /* vacío */
+    8                            | INIVAR variables_locales FINVAR
+
+    9 variables_locales: cuerpo_declar_variables variables_locales
+   10                  | cuerpo_declar_variables
+
+   11 cuerpo_declar_variables: lista_variables DOSPUNTOS tipo opcion_asign_variable PUNTOCOMA
+   12                        | error
+
+   13 opcion_asign_variable: ASIGNACION expresion
+   14                      | /* vacío */
+
+   15 lista_variables: IDENTIFICADOR lista_identificador
+   16                | error
+
+   17 lista_identificador: /* vacío */
+   18                    | COMA IDENTIFICADOR lista_identificador
+
+   19 cabecera_subprograma: PROCEDIMIENTO IDENTIFICADOR PARIZQ variables_subprograma PARDER
+
+   20 variables_subprograma: /* vacío */
+   21                      | lista_variables DOSPUNTOS tipo lista_variables_subprograma
+   22                      | error
+
+   23 lista_variables_subprograma: /* vacío */
+   24                            | PUNTOCOMA lista_variables DOSPUNTOS tipo lista_variables_subprograma
+   25                            | error
+
+   26 sentencias: /* vacío */
+   27           | sentencias sentencia
+
+   28 sentencia: bloque
+   29          | asignacion_procedimiento
+   30          | sentencia_if
+   31          | sentencia_switch
+   32          | sentencia_while
+   33          | sentencia_entrada
+   34          | sentencia_salida
+   35          | error
+
+   36 asignacion_procedimiento: IDENTIFICADOR procedimientoOasignacion
+
+   37 procedimientoOasignacion: llamada_procedimiento
+   38                         | sentencia_asignacion
+
+   39 llamada_procedimiento: PARIZQ lista_expresiones_o_cadena PARDER PUNTOCOMA
+
+   40 sentencia_asignacion: ASIGNACION expresion PUNTOCOMA
+
+   41 sentencia_if: SI expresion ENTONCES sentencia SINO sentencia
+   42             | SI expresion ENTONCES sentencia
+
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+
+   44 opcion_switch_sino: /* vacío */
+   45                   | SINO sentencia
+
+   46 lista_sentencia_switch: /* vacío */
+   47                       | lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch
+
+   48 lista_variables_switch: lista_variables
+   49                       | CONSTANTE lista_constantes
+
+   50 sentencia_while: MIENTRAS expresion HACER sentencia FIN
+
+   51 sentencia_entrada: LEER lista_variables PUNTOCOMA
+
+   52 sentencia_salida: ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+   53 lista_expresiones_o_cadena: expresion_cad
+   54                           | expresion_cad COMA lista_expresiones_o_cadena
+
+   55 expresion_cad: expresion
+   56              | CADENA
+
+   57 expresion: PARIZQ expresion PARDER
+   58          | OPUNARIO expresion
+   59          | expresion OP_MULDIV expresion
+   60          | expresion SIGNO expresion
+   61          | expresion OP_RELACIONAL expresion
+   62          | expresion OP_OR expresion
+   63          | expresion OP_AND expresion
+   64          | expresion OP_IGUALDAD expresion
+   65          | IDENTIFICADOR
+   66          | CONSTANTE
+   67          | agregado
+   68          | SIGNO expresion
+   69          | error
+
+   70 agregado: LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+   71 lista_constantes: /* vacío */
+   72                 | COMA CONSTANTE lista_constantes
+
+   73 tipo: TIPOSIMPLE
+   74     | PILA TIPOSIMPLE
+
+
+Terminales con las reglas donde aparecen
+
+$end (0) 0
+error (256) 12 16 22 25 35 69
+IDENTIFICADOR (258) 15 18 19 36 43 65
+CONSTANTE (259) 49 66 70 72
+OPUNARIO (260) 58
+OP_MULDIV (261) 59
+SIGNO (262) 60 68
+INIVAR (263) 8
+FINVAR (264) 8
+TIPOSIMPLE (265) 73 74
+PILA (266) 74
+MIENTRAS (267) 50
+PUNTO (268) 1
+CADENA (269) 56
+ESCRIBIR (270) 52
+LEER (271) 51
+CASO (272) 43
+DE (273) 43
+SI (274) 41 42
+HACER (275) 50
+ENTONCES (276) 41 42
+SINO (277) 41 45
+PARIZQ (278) 19 39 57
+PARDER (279) 19 39 57
+INICIO (280) 3
+FIN (281) 3 43 50
+ASIGNACION (282) 13 40
+PROGRAMA (283) 1
+DOSPUNTOS (284) 11 21 24 43 47
+PUNTOCOMA (285) 6 11 24 39 40 51 52
+COMA (286) 18 54 72
+LLAVEIZQ (287) 70
+LLAVEDER (288) 70
+PROCEDIMIENTO (289) 19
+OP_OR (290) 62
+OP_AND (291) 63
+OP_RELACIONAL (292) 61
+OP_IGUALDAD (293) 64
+
+
+No terminales con las reglas donde aparecen
+
+$accept (39)
+    en la izquierda: 0
+programa (40)
+    en la izquierda: 1, en la derecha: 0
+bloque (41)
+    en la izquierda: 3, en la derecha: 1 6 28
+$@1 (42)
+    en la izquierda: 2, en la derecha: 3
+declar_de_subprogs (43)
+    en la izquierda: 4 5, en la derecha: 3 5
+declar_subprog (44)
+    en la izquierda: 6, en la derecha: 5
+declar_de_variables_locales (45)
+    en la izquierda: 7 8, en la derecha: 3
+variables_locales (46)
+    en la izquierda: 9 10, en la derecha: 8 9
+cuerpo_declar_variables (47)
+    en la izquierda: 11 12, en la derecha: 9 10
+opcion_asign_variable (48)
+    en la izquierda: 13 14, en la derecha: 11
+lista_variables (49)
+    en la izquierda: 15 16, en la derecha: 11 21 24 48 51
+lista_identificador (50)
+    en la izquierda: 17 18, en la derecha: 15 18
+cabecera_subprograma (51)
+    en la izquierda: 19, en la derecha: 6
+variables_subprograma (52)
+    en la izquierda: 20 21 22, en la derecha: 19
+lista_variables_subprograma (53)
+    en la izquierda: 23 24 25, en la derecha: 21 24
+sentencias (54)
+    en la izquierda: 26 27, en la derecha: 3 27
+sentencia (55)
+    en la izquierda: 28 29 30 31 32 33 34 35, en la derecha: 27 41
+    42 43 45 47 50
+asignacion_procedimiento (56)
+    en la izquierda: 36, en la derecha: 29
+procedimientoOasignacion (57)
+    en la izquierda: 37 38, en la derecha: 36
+llamada_procedimiento (58)
+    en la izquierda: 39, en la derecha: 37
+sentencia_asignacion (59)
+    en la izquierda: 40, en la derecha: 38
+sentencia_if (60)
+    en la izquierda: 41 42, en la derecha: 30
+sentencia_switch (61)
+    en la izquierda: 43, en la derecha: 31
+opcion_switch_sino (62)
+    en la izquierda: 44 45, en la derecha: 43
+lista_sentencia_switch (63)
+    en la izquierda: 46 47, en la derecha: 43 47
+lista_variables_switch (64)
+    en la izquierda: 48 49, en la derecha: 43 47
+sentencia_while (65)
+    en la izquierda: 50, en la derecha: 32
+sentencia_entrada (66)
+    en la izquierda: 51, en la derecha: 33
+sentencia_salida (67)
+    en la izquierda: 52, en la derecha: 34
+lista_expresiones_o_cadena (68)
+    en la izquierda: 53 54, en la derecha: 39 52 54
+expresion_cad (69)
+    en la izquierda: 55 56, en la derecha: 53 54
+expresion (70)
+    en la izquierda: 57 58 59 60 61 62 63 64 65 66 67 68 69, en la derecha:
+    13 40 41 42 50 55 57 58 59 60 61 62 63 64 68
+agregado (71)
+    en la izquierda: 70, en la derecha: 67
+lista_constantes (72)
+    en la izquierda: 71 72, en la derecha: 49 70 72
+tipo (73)
+    en la izquierda: 73 74, en la derecha: 11 21 24
+
+
+estado 0
+
+    0 $accept: . programa $end
+    1 programa: . PROGRAMA bloque PUNTO
+
+    PROGRAMA  desplazar e ir al estado 1
+
+    programa  ir al estado 2
+
+
+estado 1
+
+    1 programa: PROGRAMA . bloque PUNTO
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+
+    INICIO  desplazar e ir al estado 3
+
+    bloque  ir al estado 4
+
+
+estado 2
+
+    0 $accept: programa . $end
+
+    $end  desplazar e ir al estado 5
+
+
+estado 3
+
+    2 $@1: .
+    3 bloque: INICIO . $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+
+    $default  reduce usando la regla 2 ($@1)
+
+    $@1  ir al estado 6
+
+
+estado 4
+
+    1 programa: PROGRAMA bloque . PUNTO
+
+    PUNTO  desplazar e ir al estado 7
+
+
+estado 5
+
+    0 $accept: programa $end .
+
+    $default  aceptar
+
+
+estado 6
+
+    3 bloque: INICIO $@1 . declar_de_variables_locales declar_de_subprogs sentencias FIN
+    7 declar_de_variables_locales: .  [error, IDENTIFICADOR, MIENTRAS, ESCRIBIR, LEER, CASO, SI, INICIO, FIN, PROCEDIMIENTO]
+    8                            | . INIVAR variables_locales FINVAR
+
+    INIVAR  desplazar e ir al estado 8
+
+    $default  reduce usando la regla 7 (declar_de_variables_locales)
+
+    declar_de_variables_locales  ir al estado 9
+
+
+estado 7
+
+    1 programa: PROGRAMA bloque PUNTO .
+
+    $default  reduce usando la regla 1 (programa)
+
+
+estado 8
+
+    8 declar_de_variables_locales: INIVAR . variables_locales FINVAR
+    9 variables_locales: . cuerpo_declar_variables variables_locales
+   10                  | . cuerpo_declar_variables
+   11 cuerpo_declar_variables: . lista_variables DOSPUNTOS tipo opcion_asign_variable PUNTOCOMA
+   12                        | . error
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+
+    error          desplazar e ir al estado 10
+    IDENTIFICADOR  desplazar e ir al estado 11
+
+    variables_locales        ir al estado 12
+    cuerpo_declar_variables  ir al estado 13
+    lista_variables          ir al estado 14
+
+
+estado 9
+
+    3 bloque: INICIO $@1 declar_de_variables_locales . declar_de_subprogs sentencias FIN
+    4 declar_de_subprogs: .
+    5                   | . declar_de_subprogs declar_subprog
+
+    $default  reduce usando la regla 4 (declar_de_subprogs)
+
+    declar_de_subprogs  ir al estado 15
+
+
+estado 10
+
+   12 cuerpo_declar_variables: error .  [error, IDENTIFICADOR, FINVAR]
+   16 lista_variables: error .  [DOSPUNTOS]
+
+    DOSPUNTOS  reduce usando la regla 16 (lista_variables)
+    $default   reduce usando la regla 12 (cuerpo_declar_variables)
+
+
+estado 11
+
+   15 lista_variables: IDENTIFICADOR . lista_identificador
+   17 lista_identificador: .  [DOSPUNTOS, PUNTOCOMA]
+   18                    | . COMA IDENTIFICADOR lista_identificador
+
+    COMA  desplazar e ir al estado 16
+
+    $default  reduce usando la regla 17 (lista_identificador)
+
+    lista_identificador  ir al estado 17
+
+
+estado 12
+
+    8 declar_de_variables_locales: INIVAR variables_locales . FINVAR
+
+    FINVAR  desplazar e ir al estado 18
+
+
+estado 13
+
+    9 variables_locales: . cuerpo_declar_variables variables_locales
+    9                  | cuerpo_declar_variables . variables_locales
+   10                  | . cuerpo_declar_variables
+   10                  | cuerpo_declar_variables .  [FINVAR]
+   11 cuerpo_declar_variables: . lista_variables DOSPUNTOS tipo opcion_asign_variable PUNTOCOMA
+   12                        | . error
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+
+    error          desplazar e ir al estado 10
+    IDENTIFICADOR  desplazar e ir al estado 11
+
+    FINVAR  reduce usando la regla 10 (variables_locales)
+
+    variables_locales        ir al estado 19
+    cuerpo_declar_variables  ir al estado 13
+    lista_variables          ir al estado 14
+
+
+estado 14
+
+   11 cuerpo_declar_variables: lista_variables . DOSPUNTOS tipo opcion_asign_variable PUNTOCOMA
+
+    DOSPUNTOS  desplazar e ir al estado 20
+
+
+estado 15
+
+    3 bloque: INICIO $@1 declar_de_variables_locales declar_de_subprogs . sentencias FIN
+    5 declar_de_subprogs: declar_de_subprogs . declar_subprog
+    6 declar_subprog: . cabecera_subprograma bloque PUNTOCOMA
+   19 cabecera_subprograma: . PROCEDIMIENTO IDENTIFICADOR PARIZQ variables_subprograma PARDER
+   26 sentencias: .  [error, IDENTIFICADOR, MIENTRAS, ESCRIBIR, LEER, CASO, SI, INICIO, FIN]
+   27           | . sentencias sentencia
+
+    PROCEDIMIENTO  desplazar e ir al estado 21
+
+    $default  reduce usando la regla 26 (sentencias)
+
+    declar_subprog        ir al estado 22
+    cabecera_subprograma  ir al estado 23
+    sentencias            ir al estado 24
+
+
+estado 16
+
+   18 lista_identificador: COMA . IDENTIFICADOR lista_identificador
+
+    IDENTIFICADOR  desplazar e ir al estado 25
+
+
+estado 17
+
+   15 lista_variables: IDENTIFICADOR lista_identificador .
+
+    $default  reduce usando la regla 15 (lista_variables)
+
+
+estado 18
+
+    8 declar_de_variables_locales: INIVAR variables_locales FINVAR .
+
+    $default  reduce usando la regla 8 (declar_de_variables_locales)
+
+
+estado 19
+
+    9 variables_locales: cuerpo_declar_variables variables_locales .
+
+    $default  reduce usando la regla 9 (variables_locales)
+
+
+estado 20
+
+   11 cuerpo_declar_variables: lista_variables DOSPUNTOS . tipo opcion_asign_variable PUNTOCOMA
+   73 tipo: . TIPOSIMPLE
+   74     | . PILA TIPOSIMPLE
+
+    TIPOSIMPLE  desplazar e ir al estado 26
+    PILA        desplazar e ir al estado 27
+
+    tipo  ir al estado 28
+
+
+estado 21
+
+   19 cabecera_subprograma: PROCEDIMIENTO . IDENTIFICADOR PARIZQ variables_subprograma PARDER
+
+    IDENTIFICADOR  desplazar e ir al estado 29
+
+
+estado 22
+
+    5 declar_de_subprogs: declar_de_subprogs declar_subprog .
+
+    $default  reduce usando la regla 5 (declar_de_subprogs)
+
+
+estado 23
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+    6 declar_subprog: cabecera_subprograma . bloque PUNTOCOMA
+
+    INICIO  desplazar e ir al estado 3
+
+    bloque  ir al estado 30
+
+
+estado 24
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+    3       | INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias . FIN
+   27 sentencias: sentencias . sentencia
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   42             | . SI expresion ENTONCES sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+    FIN            desplazar e ir al estado 38
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 40
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 25
+
+   17 lista_identificador: .  [DOSPUNTOS, PUNTOCOMA]
+   18                    | . COMA IDENTIFICADOR lista_identificador
+   18                    | COMA IDENTIFICADOR . lista_identificador
+
+    COMA  desplazar e ir al estado 16
+
+    $default  reduce usando la regla 17 (lista_identificador)
+
+    lista_identificador  ir al estado 47
+
+
+estado 26
+
+   73 tipo: TIPOSIMPLE .
+
+    $default  reduce usando la regla 73 (tipo)
+
+
+estado 27
+
+   74 tipo: PILA . TIPOSIMPLE
+
+    TIPOSIMPLE  desplazar e ir al estado 48
+
+
+estado 28
+
+   11 cuerpo_declar_variables: lista_variables DOSPUNTOS tipo . opcion_asign_variable PUNTOCOMA
+   13 opcion_asign_variable: . ASIGNACION expresion
+   14                      | .  [PUNTOCOMA]
+
+    ASIGNACION  desplazar e ir al estado 49
+
+    $default  reduce usando la regla 14 (opcion_asign_variable)
+
+    opcion_asign_variable  ir al estado 50
+
+
+estado 29
+
+   19 cabecera_subprograma: PROCEDIMIENTO IDENTIFICADOR . PARIZQ variables_subprograma PARDER
+
+    PARIZQ  desplazar e ir al estado 51
+
+
+estado 30
+
+    6 declar_subprog: cabecera_subprograma bloque . PUNTOCOMA
+
+    PUNTOCOMA  desplazar e ir al estado 52
+
+
+estado 31
+
+   35 sentencia: error .
+
+    $default  reduce usando la regla 35 (sentencia)
+
+
+estado 32
+
+   36 asignacion_procedimiento: IDENTIFICADOR . procedimientoOasignacion
+   37 procedimientoOasignacion: . llamada_procedimiento
+   38                         | . sentencia_asignacion
+   39 llamada_procedimiento: . PARIZQ lista_expresiones_o_cadena PARDER PUNTOCOMA
+   40 sentencia_asignacion: . ASIGNACION expresion PUNTOCOMA
+
+    PARIZQ      desplazar e ir al estado 53
+    ASIGNACION  desplazar e ir al estado 54
+
+    procedimientoOasignacion  ir al estado 55
+    llamada_procedimiento     ir al estado 56
+    sentencia_asignacion      ir al estado 57
+
+
+estado 33
+
+   50 sentencia_while: MIENTRAS . expresion HACER sentencia FIN
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 65
+    agregado   ir al estado 66
+
+
+estado 34
+
+   52 sentencia_salida: ESCRIBIR . lista_expresiones_o_cadena PUNTOCOMA
+   53 lista_expresiones_o_cadena: . expresion_cad
+   54                           | . expresion_cad COMA lista_expresiones_o_cadena
+   55 expresion_cad: . expresion
+   56              | . CADENA
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    CADENA         desplazar e ir al estado 67
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    lista_expresiones_o_cadena  ir al estado 68
+    expresion_cad               ir al estado 69
+    expresion                   ir al estado 70
+    agregado                    ir al estado 66
+
+
+estado 35
+
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+   51 sentencia_entrada: LEER . lista_variables PUNTOCOMA
+
+    error          desplazar e ir al estado 71
+    IDENTIFICADOR  desplazar e ir al estado 11
+
+    lista_variables  ir al estado 72
+
+
+estado 36
+
+   43 sentencia_switch: CASO . IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+
+    IDENTIFICADOR  desplazar e ir al estado 73
+
+
+estado 37
+
+   41 sentencia_if: SI . expresion ENTONCES sentencia SINO sentencia
+   42             | SI . expresion ENTONCES sentencia
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 74
+    agregado   ir al estado 66
+
+
+estado 38
+
+    3 bloque: INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN .
+
+    $default  reduce usando la regla 3 (bloque)
+
+
+estado 39
+
+   28 sentencia: bloque .
+
+    $default  reduce usando la regla 28 (sentencia)
+
+
+estado 40
+
+   27 sentencias: sentencias sentencia .
+
+    $default  reduce usando la regla 27 (sentencias)
+
+
+estado 41
+
+   29 sentencia: asignacion_procedimiento .
+
+    $default  reduce usando la regla 29 (sentencia)
+
+
+estado 42
+
+   30 sentencia: sentencia_if .
+
+    $default  reduce usando la regla 30 (sentencia)
+
+
+estado 43
+
+   31 sentencia: sentencia_switch .
+
+    $default  reduce usando la regla 31 (sentencia)
+
+
+estado 44
+
+   32 sentencia: sentencia_while .
+
+    $default  reduce usando la regla 32 (sentencia)
+
+
+estado 45
+
+   33 sentencia: sentencia_entrada .
+
+    $default  reduce usando la regla 33 (sentencia)
+
+
+estado 46
+
+   34 sentencia: sentencia_salida .
+
+    $default  reduce usando la regla 34 (sentencia)
+
+
+estado 47
+
+   18 lista_identificador: COMA IDENTIFICADOR lista_identificador .
+
+    $default  reduce usando la regla 18 (lista_identificador)
+
+
+estado 48
+
+   74 tipo: PILA TIPOSIMPLE .
+
+    $default  reduce usando la regla 74 (tipo)
+
+
+estado 49
+
+   13 opcion_asign_variable: ASIGNACION . expresion
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 75
+    agregado   ir al estado 66
+
+
+estado 50
+
+   11 cuerpo_declar_variables: lista_variables DOSPUNTOS tipo opcion_asign_variable . PUNTOCOMA
+
+    PUNTOCOMA  desplazar e ir al estado 76
+
+
+estado 51
+
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+   19 cabecera_subprograma: PROCEDIMIENTO IDENTIFICADOR PARIZQ . variables_subprograma PARDER
+   20 variables_subprograma: .  [PARDER]
+   21                      | . lista_variables DOSPUNTOS tipo lista_variables_subprograma
+   22                      | . error
+
+    error          desplazar e ir al estado 77
+    IDENTIFICADOR  desplazar e ir al estado 11
+
+    PARDER  reduce usando la regla 20 (variables_subprograma)
+
+    lista_variables        ir al estado 78
+    variables_subprograma  ir al estado 79
+
+
+estado 52
+
+    6 declar_subprog: cabecera_subprograma bloque PUNTOCOMA .
+
+    $default  reduce usando la regla 6 (declar_subprog)
+
+
+estado 53
+
+   39 llamada_procedimiento: PARIZQ . lista_expresiones_o_cadena PARDER PUNTOCOMA
+   53 lista_expresiones_o_cadena: . expresion_cad
+   54                           | . expresion_cad COMA lista_expresiones_o_cadena
+   55 expresion_cad: . expresion
+   56              | . CADENA
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    CADENA         desplazar e ir al estado 67
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    lista_expresiones_o_cadena  ir al estado 80
+    expresion_cad               ir al estado 69
+    expresion                   ir al estado 70
+    agregado                    ir al estado 66
+
+
+estado 54
+
+   40 sentencia_asignacion: ASIGNACION . expresion PUNTOCOMA
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 81
+    agregado   ir al estado 66
+
+
+estado 55
+
+   36 asignacion_procedimiento: IDENTIFICADOR procedimientoOasignacion .
+
+    $default  reduce usando la regla 36 (asignacion_procedimiento)
+
+
+estado 56
+
+   37 procedimientoOasignacion: llamada_procedimiento .
+
+    $default  reduce usando la regla 37 (procedimientoOasignacion)
+
+
+estado 57
+
+   38 procedimientoOasignacion: sentencia_asignacion .
+
+    $default  reduce usando la regla 38 (procedimientoOasignacion)
+
+
+estado 58
+
+   69 expresion: error .
+
+    $default  reduce usando la regla 69 (expresion)
+
+
+estado 59
+
+   65 expresion: IDENTIFICADOR .
+
+    $default  reduce usando la regla 65 (expresion)
+
+
+estado 60
+
+   66 expresion: CONSTANTE .
+
+    $default  reduce usando la regla 66 (expresion)
+
+
+estado 61
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   58          | OPUNARIO . expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 82
+    agregado   ir al estado 66
+
+
+estado 62
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   68          | SIGNO . expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 83
+    agregado   ir al estado 66
+
+
+estado 63
+
+   57 expresion: . PARIZQ expresion PARDER
+   57          | PARIZQ . expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 84
+    agregado   ir al estado 66
+
+
+estado 64
+
+   70 agregado: LLAVEIZQ . CONSTANTE lista_constantes LLAVEDER
+
+    CONSTANTE  desplazar e ir al estado 85
+
+
+estado 65
+
+   50 sentencia_while: MIENTRAS expresion . HACER sentencia FIN
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    HACER          desplazar e ir al estado 88
+    OP_OR          desplazar e ir al estado 89
+    OP_AND         desplazar e ir al estado 90
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+
+estado 66
+
+   67 expresion: agregado .
+
+    $default  reduce usando la regla 67 (expresion)
+
+
+estado 67
+
+   56 expresion_cad: CADENA .
+
+    $default  reduce usando la regla 56 (expresion_cad)
+
+
+estado 68
+
+   52 sentencia_salida: ESCRIBIR lista_expresiones_o_cadena . PUNTOCOMA
+
+    PUNTOCOMA  desplazar e ir al estado 93
+
+
+estado 69
+
+   53 lista_expresiones_o_cadena: expresion_cad .  [PARDER, PUNTOCOMA]
+   54                           | expresion_cad . COMA lista_expresiones_o_cadena
+
+    COMA  desplazar e ir al estado 94
+
+    $default  reduce usando la regla 53 (lista_expresiones_o_cadena)
+
+
+estado 70
+
+   55 expresion_cad: expresion .  [PARDER, PUNTOCOMA, COMA]
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    OP_OR          desplazar e ir al estado 89
+    OP_AND         desplazar e ir al estado 90
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+    $default  reduce usando la regla 55 (expresion_cad)
+
+
+estado 71
+
+   16 lista_variables: error .
+
+    $default  reduce usando la regla 16 (lista_variables)
+
+
+estado 72
+
+   51 sentencia_entrada: LEER lista_variables . PUNTOCOMA
+
+    PUNTOCOMA  desplazar e ir al estado 95
+
+
+estado 73
+
+   43 sentencia_switch: CASO IDENTIFICADOR . DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+
+    DE  desplazar e ir al estado 96
+
+
+estado 74
+
+   41 sentencia_if: SI expresion . ENTONCES sentencia SINO sentencia
+   42             | SI expresion . ENTONCES sentencia
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    ENTONCES       desplazar e ir al estado 97
+    OP_OR          desplazar e ir al estado 89
+    OP_AND         desplazar e ir al estado 90
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+
+estado 75
+
+   13 opcion_asign_variable: ASIGNACION expresion .  [PUNTOCOMA]
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    OP_OR          desplazar e ir al estado 89
+    OP_AND         desplazar e ir al estado 90
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+    $default  reduce usando la regla 13 (opcion_asign_variable)
+
+
+estado 76
+
+   11 cuerpo_declar_variables: lista_variables DOSPUNTOS tipo opcion_asign_variable PUNTOCOMA .
+
+    $default  reduce usando la regla 11 (cuerpo_declar_variables)
+
+
+estado 77
+
+   16 lista_variables: error .  [DOSPUNTOS]
+   22 variables_subprograma: error .  [PARDER]
+
+    PARDER    reduce usando la regla 22 (variables_subprograma)
+    $default  reduce usando la regla 16 (lista_variables)
+
+
+estado 78
+
+   21 variables_subprograma: lista_variables . DOSPUNTOS tipo lista_variables_subprograma
+
+    DOSPUNTOS  desplazar e ir al estado 98
+
+
+estado 79
+
+   19 cabecera_subprograma: PROCEDIMIENTO IDENTIFICADOR PARIZQ variables_subprograma . PARDER
+
+    PARDER  desplazar e ir al estado 99
+
+
+estado 80
+
+   39 llamada_procedimiento: PARIZQ lista_expresiones_o_cadena . PARDER PUNTOCOMA
+
+    PARDER  desplazar e ir al estado 100
+
+
+estado 81
+
+   40 sentencia_asignacion: ASIGNACION expresion . PUNTOCOMA
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    PUNTOCOMA      desplazar e ir al estado 101
+    OP_OR          desplazar e ir al estado 89
+    OP_AND         desplazar e ir al estado 90
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+
+estado 82
+
+   58 expresion: OPUNARIO expresion .  [OP_MULDIV, SIGNO, HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR, OP_AND, OP_RELACIONAL, OP_IGUALDAD]
+   59          | expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    $default  reduce usando la regla 58 (expresion)
+
+    El conflicto entre la regla 58 y el terminal OP_MULDIV se resuelve como reducción. (OP_MULDIV < OPUNARIO).
+    El conflicto entre la regla 58 y el terminal SIGNO se resuelve como reducción. (SIGNO < OPUNARIO).
+    El conflicto entre la regla 58 y el terminal OP_OR se resuelve como reducción. (OP_OR < OPUNARIO).
+    El conflicto entre la regla 58 y el terminal OP_AND se resuelve como reducción. (OP_AND < OPUNARIO).
+    El conflicto entre la regla 58 y el terminal OP_RELACIONAL se resuelve como reducción. (OP_RELACIONAL < OPUNARIO).
+    El conflicto entre la regla 58 y el terminal OP_IGUALDAD se resuelve como reducción. (OP_IGUALDAD < OPUNARIO).
+
+
+estado 83
+
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+   68          | SIGNO expresion .  [OP_MULDIV, SIGNO, HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR, OP_AND, OP_RELACIONAL, OP_IGUALDAD]
+
+    $default  reduce usando la regla 68 (expresion)
+
+    El conflicto entre la regla 68 y el terminal OP_MULDIV se resuelve como reducción. (OP_MULDIV < OPUNARIO).
+    El conflicto entre la regla 68 y el terminal SIGNO se resuelve como reducción. (SIGNO < OPUNARIO).
+    El conflicto entre la regla 68 y el terminal OP_OR se resuelve como reducción. (OP_OR < OPUNARIO).
+    El conflicto entre la regla 68 y el terminal OP_AND se resuelve como reducción. (OP_AND < OPUNARIO).
+    El conflicto entre la regla 68 y el terminal OP_RELACIONAL se resuelve como reducción. (OP_RELACIONAL < OPUNARIO).
+    El conflicto entre la regla 68 y el terminal OP_IGUALDAD se resuelve como reducción. (OP_IGUALDAD < OPUNARIO).
+
+
+estado 84
+
+   57 expresion: PARIZQ expresion . PARDER
+   59          | expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    PARDER         desplazar e ir al estado 102
+    OP_OR          desplazar e ir al estado 89
+    OP_AND         desplazar e ir al estado 90
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+
+estado 85
+
+   70 agregado: LLAVEIZQ CONSTANTE . lista_constantes LLAVEDER
+   71 lista_constantes: .  [LLAVEDER]
+   72                 | . COMA CONSTANTE lista_constantes
+
+    COMA  desplazar e ir al estado 103
+
+    $default  reduce usando la regla 71 (lista_constantes)
+
+    lista_constantes  ir al estado 104
+
+
+estado 86
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   59          | expresion OP_MULDIV . expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 105
+    agregado   ir al estado 66
+
+
+estado 87
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   60          | expresion SIGNO . expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 106
+    agregado   ir al estado 66
+
+
+estado 88
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   42             | . SI expresion ENTONCES sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   50                | MIENTRAS expresion HACER . sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 107
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 89
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   62          | expresion OP_OR . expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 108
+    agregado   ir al estado 66
+
+
+estado 90
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   63          | expresion OP_AND . expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 109
+    agregado   ir al estado 66
+
+
+estado 91
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   61          | expresion OP_RELACIONAL . expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 110
+    agregado   ir al estado 66
+
+
+estado 92
+
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   64          | expresion OP_IGUALDAD . expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    expresion  ir al estado 111
+    agregado   ir al estado 66
+
+
+estado 93
+
+   52 sentencia_salida: ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA .
+
+    $default  reduce usando la regla 52 (sentencia_salida)
+
+
+estado 94
+
+   53 lista_expresiones_o_cadena: . expresion_cad
+   54                           | . expresion_cad COMA lista_expresiones_o_cadena
+   54                           | expresion_cad COMA . lista_expresiones_o_cadena
+   55 expresion_cad: . expresion
+   56              | . CADENA
+   57 expresion: . PARIZQ expresion PARDER
+   58          | . OPUNARIO expresion
+   59          | . expresion OP_MULDIV expresion
+   60          | . expresion SIGNO expresion
+   61          | . expresion OP_RELACIONAL expresion
+   62          | . expresion OP_OR expresion
+   63          | . expresion OP_AND expresion
+   64          | . expresion OP_IGUALDAD expresion
+   65          | . IDENTIFICADOR
+   66          | . CONSTANTE
+   67          | . agregado
+   68          | . SIGNO expresion
+   69          | . error
+   70 agregado: . LLAVEIZQ CONSTANTE lista_constantes LLAVEDER
+
+    error          desplazar e ir al estado 58
+    IDENTIFICADOR  desplazar e ir al estado 59
+    CONSTANTE      desplazar e ir al estado 60
+    OPUNARIO       desplazar e ir al estado 61
+    SIGNO          desplazar e ir al estado 62
+    CADENA         desplazar e ir al estado 67
+    PARIZQ         desplazar e ir al estado 63
+    LLAVEIZQ       desplazar e ir al estado 64
+
+    lista_expresiones_o_cadena  ir al estado 112
+    expresion_cad               ir al estado 69
+    expresion                   ir al estado 70
+    agregado                    ir al estado 66
+
+
+estado 95
+
+   51 sentencia_entrada: LEER lista_variables PUNTOCOMA .
+
+    $default  reduce usando la regla 51 (sentencia_entrada)
+
+
+estado 96
+
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+   43 sentencia_switch: CASO IDENTIFICADOR DE . lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   48 lista_variables_switch: . lista_variables
+   49                       | . CONSTANTE lista_constantes
+
+    error          desplazar e ir al estado 71
+    IDENTIFICADOR  desplazar e ir al estado 11
+    CONSTANTE      desplazar e ir al estado 113
+
+    lista_variables         ir al estado 114
+    lista_variables_switch  ir al estado 115
+
+
+estado 97
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   41             | SI expresion ENTONCES . sentencia SINO sentencia
+   42             | . SI expresion ENTONCES sentencia
+   42             | SI expresion ENTONCES . sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 116
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 98
+
+   21 variables_subprograma: lista_variables DOSPUNTOS . tipo lista_variables_subprograma
+   73 tipo: . TIPOSIMPLE
+   74     | . PILA TIPOSIMPLE
+
+    TIPOSIMPLE  desplazar e ir al estado 26
+    PILA        desplazar e ir al estado 27
+
+    tipo  ir al estado 117
+
+
+estado 99
+
+   19 cabecera_subprograma: PROCEDIMIENTO IDENTIFICADOR PARIZQ variables_subprograma PARDER .
+
+    $default  reduce usando la regla 19 (cabecera_subprograma)
+
+
+estado 100
+
+   39 llamada_procedimiento: PARIZQ lista_expresiones_o_cadena PARDER . PUNTOCOMA
+
+    PUNTOCOMA  desplazar e ir al estado 118
+
+
+estado 101
+
+   40 sentencia_asignacion: ASIGNACION expresion PUNTOCOMA .
+
+    $default  reduce usando la regla 40 (sentencia_asignacion)
+
+
+estado 102
+
+   57 expresion: PARIZQ expresion PARDER .
+
+    $default  reduce usando la regla 57 (expresion)
+
+
+estado 103
+
+   72 lista_constantes: COMA . CONSTANTE lista_constantes
+
+    CONSTANTE  desplazar e ir al estado 119
+
+
+estado 104
+
+   70 agregado: LLAVEIZQ CONSTANTE lista_constantes . LLAVEDER
+
+    LLAVEDER  desplazar e ir al estado 120
+
+
+estado 105
+
+   59 expresion: expresion . OP_MULDIV expresion
+   59          | expresion OP_MULDIV expresion .  [OP_MULDIV, SIGNO, HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR, OP_AND, OP_RELACIONAL, OP_IGUALDAD]
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    $default  reduce usando la regla 59 (expresion)
+
+    El conflicto entre la regla 59 y el terminal OP_MULDIV se resuelve como reducción. (%left OP_MULDIV).
+    El conflicto entre la regla 59 y el terminal SIGNO se resuelve como reducción. (SIGNO < OP_MULDIV).
+    El conflicto entre la regla 59 y el terminal OP_OR se resuelve como reducción. (OP_OR < OP_MULDIV).
+    El conflicto entre la regla 59 y el terminal OP_AND se resuelve como reducción. (OP_AND < OP_MULDIV).
+    El conflicto entre la regla 59 y el terminal OP_RELACIONAL se resuelve como reducción. (OP_RELACIONAL < OP_MULDIV).
+    El conflicto entre la regla 59 y el terminal OP_IGUALDAD se resuelve como reducción. (OP_IGUALDAD < OP_MULDIV).
+
+
+estado 106
+
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   60          | expresion SIGNO expresion .  [SIGNO, HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR, OP_AND, OP_RELACIONAL, OP_IGUALDAD]
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV  desplazar e ir al estado 86
+
+    $default  reduce usando la regla 60 (expresion)
+
+    El conflicto entre la regla 60 y el aviso OP_MULDIV se resuelve como cambio. (SIGNO < OP_MULDIV).
+    El conflicto entre la regla 60 y el terminal SIGNO se resuelve como reducción. (%left SIGNO).
+    El conflicto entre la regla 60 y el terminal OP_OR se resuelve como reducción. (OP_OR < SIGNO).
+    El conflicto entre la regla 60 y el terminal OP_AND se resuelve como reducción. (OP_AND < SIGNO).
+    El conflicto entre la regla 60 y el terminal OP_RELACIONAL se resuelve como reducción. (OP_RELACIONAL < SIGNO).
+    El conflicto entre la regla 60 y el terminal OP_IGUALDAD se resuelve como reducción. (OP_IGUALDAD < SIGNO).
+
+
+estado 107
+
+   50 sentencia_while: MIENTRAS expresion HACER sentencia . FIN
+
+    FIN  desplazar e ir al estado 121
+
+
+estado 108
+
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   62          | expresion OP_OR expresion .  [HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR]
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    OP_AND         desplazar e ir al estado 90
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+    $default  reduce usando la regla 62 (expresion)
+
+    El conflicto entre la regla 62 y el aviso OP_MULDIV se resuelve como cambio. (OP_OR < OP_MULDIV).
+    El conflicto entre la regla 62 y el aviso SIGNO se resuelve como cambio. (OP_OR < SIGNO).
+    El conflicto entre la regla 62 y el terminal OP_OR se resuelve como reducción. (%left OP_OR).
+    El conflicto entre la regla 62 y el aviso OP_AND se resuelve como cambio. (OP_OR < OP_AND).
+    El conflicto entre la regla 62 y el aviso OP_RELACIONAL se resuelve como cambio. (OP_OR < OP_RELACIONAL).
+    El conflicto entre la regla 62 y el aviso OP_IGUALDAD se resuelve como cambio. (OP_OR < OP_IGUALDAD).
+
+
+estado 109
+
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   63          | expresion OP_AND expresion .  [HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR, OP_AND]
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    OP_RELACIONAL  desplazar e ir al estado 91
+    OP_IGUALDAD    desplazar e ir al estado 92
+
+    $default  reduce usando la regla 63 (expresion)
+
+    El conflicto entre la regla 63 y el aviso OP_MULDIV se resuelve como cambio. (OP_AND < OP_MULDIV).
+    El conflicto entre la regla 63 y el aviso SIGNO se resuelve como cambio. (OP_AND < SIGNO).
+    El conflicto entre la regla 63 y el terminal OP_OR se resuelve como reducción. (OP_OR < OP_AND).
+    El conflicto entre la regla 63 y el terminal OP_AND se resuelve como reducción. (%left OP_AND).
+    El conflicto entre la regla 63 y el aviso OP_RELACIONAL se resuelve como cambio. (OP_AND < OP_RELACIONAL).
+    El conflicto entre la regla 63 y el aviso OP_IGUALDAD se resuelve como cambio. (OP_AND < OP_IGUALDAD).
+
+
+estado 110
+
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   61          | expresion OP_RELACIONAL expresion .  [HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR, OP_AND, OP_RELACIONAL, OP_IGUALDAD]
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+
+    OP_MULDIV  desplazar e ir al estado 86
+    SIGNO      desplazar e ir al estado 87
+
+    $default  reduce usando la regla 61 (expresion)
+
+    El conflicto entre la regla 61 y el aviso OP_MULDIV se resuelve como cambio. (OP_RELACIONAL < OP_MULDIV).
+    El conflicto entre la regla 61 y el aviso SIGNO se resuelve como cambio. (OP_RELACIONAL < SIGNO).
+    El conflicto entre la regla 61 y el terminal OP_OR se resuelve como reducción. (OP_OR < OP_RELACIONAL).
+    El conflicto entre la regla 61 y el terminal OP_AND se resuelve como reducción. (OP_AND < OP_RELACIONAL).
+    El conflicto entre la regla 61 y el terminal OP_RELACIONAL se resuelve como reducción. (%left OP_RELACIONAL).
+    El conflicto entre la regla 61 y el terminal OP_IGUALDAD se resuelve como reducción. (OP_IGUALDAD < OP_RELACIONAL).
+
+
+estado 111
+
+   59 expresion: expresion . OP_MULDIV expresion
+   60          | expresion . SIGNO expresion
+   61          | expresion . OP_RELACIONAL expresion
+   62          | expresion . OP_OR expresion
+   63          | expresion . OP_AND expresion
+   64          | expresion . OP_IGUALDAD expresion
+   64          | expresion OP_IGUALDAD expresion .  [HACER, ENTONCES, PARDER, PUNTOCOMA, COMA, OP_OR, OP_AND, OP_IGUALDAD]
+
+    OP_MULDIV      desplazar e ir al estado 86
+    SIGNO          desplazar e ir al estado 87
+    OP_RELACIONAL  desplazar e ir al estado 91
+
+    $default  reduce usando la regla 64 (expresion)
+
+    El conflicto entre la regla 64 y el aviso OP_MULDIV se resuelve como cambio. (OP_IGUALDAD < OP_MULDIV).
+    El conflicto entre la regla 64 y el aviso SIGNO se resuelve como cambio. (OP_IGUALDAD < SIGNO).
+    El conflicto entre la regla 64 y el terminal OP_OR se resuelve como reducción. (OP_OR < OP_IGUALDAD).
+    El conflicto entre la regla 64 y el terminal OP_AND se resuelve como reducción. (OP_AND < OP_IGUALDAD).
+    El conflicto entre la regla 64 y el aviso OP_RELACIONAL se resuelve como cambio. (OP_IGUALDAD < OP_RELACIONAL).
+    El conflicto entre la regla 64 y el terminal OP_IGUALDAD se resuelve como reducción. (%left OP_IGUALDAD).
+
+
+estado 112
+
+   54 lista_expresiones_o_cadena: expresion_cad COMA lista_expresiones_o_cadena .
+
+    $default  reduce usando la regla 54 (lista_expresiones_o_cadena)
+
+
+estado 113
+
+   49 lista_variables_switch: CONSTANTE . lista_constantes
+   71 lista_constantes: .  [DOSPUNTOS]
+   72                 | . COMA CONSTANTE lista_constantes
+
+    COMA  desplazar e ir al estado 103
+
+    $default  reduce usando la regla 71 (lista_constantes)
+
+    lista_constantes  ir al estado 122
+
+
+estado 114
+
+   48 lista_variables_switch: lista_variables .
+
+    $default  reduce usando la regla 48 (lista_variables_switch)
+
+
+estado 115
+
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch . DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+
+    DOSPUNTOS  desplazar e ir al estado 123
+
+
+estado 116
+
+   41 sentencia_if: SI expresion ENTONCES sentencia . SINO sentencia
+   42             | SI expresion ENTONCES sentencia .  [error, IDENTIFICADOR, CONSTANTE, MIENTRAS, ESCRIBIR, LEER, CASO, SI, SINO, INICIO, FIN]
+
+    SINO  desplazar e ir al estado 124
+
+    SINO      [reduce usando la regla 42 (sentencia_if)]
+    $default  reduce usando la regla 42 (sentencia_if)
+
+
+estado 117
+
+   21 variables_subprograma: lista_variables DOSPUNTOS tipo . lista_variables_subprograma
+   23 lista_variables_subprograma: .  [PARDER]
+   24                            | . PUNTOCOMA lista_variables DOSPUNTOS tipo lista_variables_subprograma
+   25                            | . error
+
+    error      desplazar e ir al estado 125
+    PUNTOCOMA  desplazar e ir al estado 126
+
+    PARDER  reduce usando la regla 23 (lista_variables_subprograma)
+
+    lista_variables_subprograma  ir al estado 127
+
+
+estado 118
+
+   39 llamada_procedimiento: PARIZQ lista_expresiones_o_cadena PARDER PUNTOCOMA .
+
+    $default  reduce usando la regla 39 (llamada_procedimiento)
+
+
+estado 119
+
+   71 lista_constantes: .  [DOSPUNTOS, LLAVEDER]
+   72                 | . COMA CONSTANTE lista_constantes
+   72                 | COMA CONSTANTE . lista_constantes
+
+    COMA  desplazar e ir al estado 103
+
+    $default  reduce usando la regla 71 (lista_constantes)
+
+    lista_constantes  ir al estado 128
+
+
+estado 120
+
+   70 agregado: LLAVEIZQ CONSTANTE lista_constantes LLAVEDER .
+
+    $default  reduce usando la regla 70 (agregado)
+
+
+estado 121
+
+   50 sentencia_while: MIENTRAS expresion HACER sentencia FIN .
+
+    $default  reduce usando la regla 50 (sentencia_while)
+
+
+estado 122
+
+   49 lista_variables_switch: CONSTANTE lista_constantes .
+
+    $default  reduce usando la regla 49 (lista_variables_switch)
+
+
+estado 123
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   42             | . SI expresion ENTONCES sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   43                 | CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS . sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 129
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 124
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   41             | SI expresion ENTONCES sentencia SINO . sentencia
+   42             | . SI expresion ENTONCES sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 130
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 125
+
+   25 lista_variables_subprograma: error .
+
+    $default  reduce usando la regla 25 (lista_variables_subprograma)
+
+
+estado 126
+
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+   24 lista_variables_subprograma: PUNTOCOMA . lista_variables DOSPUNTOS tipo lista_variables_subprograma
+
+    error          desplazar e ir al estado 71
+    IDENTIFICADOR  desplazar e ir al estado 11
+
+    lista_variables  ir al estado 131
+
+
+estado 127
+
+   21 variables_subprograma: lista_variables DOSPUNTOS tipo lista_variables_subprograma .
+
+    $default  reduce usando la regla 21 (variables_subprograma)
+
+
+estado 128
+
+   72 lista_constantes: COMA CONSTANTE lista_constantes .
+
+    $default  reduce usando la regla 72 (lista_constantes)
+
+
+estado 129
+
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia . lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   48 lista_variables_switch: . lista_variables
+   49                       | . CONSTANTE lista_constantes
+
+    error          desplazar e ir al estado 71
+    IDENTIFICADOR  desplazar e ir al estado 11
+    CONSTANTE      desplazar e ir al estado 113
+
+    lista_variables         ir al estado 114
+    lista_variables_switch  ir al estado 132
+
+
+estado 130
+
+   41 sentencia_if: SI expresion ENTONCES sentencia SINO sentencia .
+
+    $default  reduce usando la regla 41 (sentencia_if)
+
+
+estado 131
+
+   24 lista_variables_subprograma: PUNTOCOMA lista_variables . DOSPUNTOS tipo lista_variables_subprograma
+
+    DOSPUNTOS  desplazar e ir al estado 133
+
+
+estado 132
+
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch . DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+
+    DOSPUNTOS  desplazar e ir al estado 134
+
+
+estado 133
+
+   24 lista_variables_subprograma: PUNTOCOMA lista_variables DOSPUNTOS . tipo lista_variables_subprograma
+   73 tipo: . TIPOSIMPLE
+   74     | . PILA TIPOSIMPLE
+
+    TIPOSIMPLE  desplazar e ir al estado 26
+    PILA        desplazar e ir al estado 27
+
+    tipo  ir al estado 135
+
+
+estado 134
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   42             | . SI expresion ENTONCES sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   43                 | CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS . sentencia lista_sentencia_switch opcion_switch_sino FIN
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 136
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 135
+
+   23 lista_variables_subprograma: .  [PARDER]
+   24                            | . PUNTOCOMA lista_variables DOSPUNTOS tipo lista_variables_subprograma
+   24                            | PUNTOCOMA lista_variables DOSPUNTOS tipo . lista_variables_subprograma
+   25                            | . error
+
+    error      desplazar e ir al estado 125
+    PUNTOCOMA  desplazar e ir al estado 126
+
+    PARDER  reduce usando la regla 23 (lista_variables_subprograma)
+
+    lista_variables_subprograma  ir al estado 137
+
+
+estado 136
+
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia . lista_sentencia_switch opcion_switch_sino FIN
+   46 lista_sentencia_switch: .  [SINO, FIN]
+   47                       | . lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch
+   48 lista_variables_switch: . lista_variables
+   49                       | . CONSTANTE lista_constantes
+
+    error          desplazar e ir al estado 71
+    IDENTIFICADOR  desplazar e ir al estado 11
+    CONSTANTE      desplazar e ir al estado 113
+
+    SINO  reduce usando la regla 46 (lista_sentencia_switch)
+    FIN   reduce usando la regla 46 (lista_sentencia_switch)
+
+    lista_variables         ir al estado 114
+    lista_sentencia_switch  ir al estado 138
+    lista_variables_switch  ir al estado 139
+
+
+estado 137
+
+   24 lista_variables_subprograma: PUNTOCOMA lista_variables DOSPUNTOS tipo lista_variables_subprograma .
+
+    $default  reduce usando la regla 24 (lista_variables_subprograma)
+
+
+estado 138
+
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch . opcion_switch_sino FIN
+   44 opcion_switch_sino: .  [FIN]
+   45                   | . SINO sentencia
+
+    SINO  desplazar e ir al estado 140
+
+    $default  reduce usando la regla 44 (opcion_switch_sino)
+
+    opcion_switch_sino  ir al estado 141
+
+
+estado 139
+
+   47 lista_sentencia_switch: lista_variables_switch . DOSPUNTOS sentencia lista_sentencia_switch
+
+    DOSPUNTOS  desplazar e ir al estado 142
+
+
+estado 140
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   42             | . SI expresion ENTONCES sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   45 opcion_switch_sino: SINO . sentencia
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 143
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 141
+
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino . FIN
+
+    FIN  desplazar e ir al estado 144
+
+
+estado 142
+
+    3 bloque: . INICIO $@1 declar_de_variables_locales declar_de_subprogs sentencias FIN
+   28 sentencia: . bloque
+   29          | . asignacion_procedimiento
+   30          | . sentencia_if
+   31          | . sentencia_switch
+   32          | . sentencia_while
+   33          | . sentencia_entrada
+   34          | . sentencia_salida
+   35          | . error
+   36 asignacion_procedimiento: . IDENTIFICADOR procedimientoOasignacion
+   41 sentencia_if: . SI expresion ENTONCES sentencia SINO sentencia
+   42             | . SI expresion ENTONCES sentencia
+   43 sentencia_switch: . CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN
+   47 lista_sentencia_switch: lista_variables_switch DOSPUNTOS . sentencia lista_sentencia_switch
+   50 sentencia_while: . MIENTRAS expresion HACER sentencia FIN
+   51 sentencia_entrada: . LEER lista_variables PUNTOCOMA
+   52 sentencia_salida: . ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA
+
+    error          desplazar e ir al estado 31
+    IDENTIFICADOR  desplazar e ir al estado 32
+    MIENTRAS       desplazar e ir al estado 33
+    ESCRIBIR       desplazar e ir al estado 34
+    LEER           desplazar e ir al estado 35
+    CASO           desplazar e ir al estado 36
+    SI             desplazar e ir al estado 37
+    INICIO         desplazar e ir al estado 3
+
+    bloque                    ir al estado 39
+    sentencia                 ir al estado 145
+    asignacion_procedimiento  ir al estado 41
+    sentencia_if              ir al estado 42
+    sentencia_switch          ir al estado 43
+    sentencia_while           ir al estado 44
+    sentencia_entrada         ir al estado 45
+    sentencia_salida          ir al estado 46
+
+
+estado 143
+
+   45 opcion_switch_sino: SINO sentencia .
+
+    $default  reduce usando la regla 45 (opcion_switch_sino)
+
+
+estado 144
+
+   43 sentencia_switch: CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN .
+
+    $default  reduce usando la regla 43 (sentencia_switch)
+
+
+estado 145
+
+   15 lista_variables: . IDENTIFICADOR lista_identificador
+   16                | . error
+   46 lista_sentencia_switch: .  [SINO, FIN]
+   47                       | . lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch
+   47                       | lista_variables_switch DOSPUNTOS sentencia . lista_sentencia_switch
+   48 lista_variables_switch: . lista_variables
+   49                       | . CONSTANTE lista_constantes
+
+    error          desplazar e ir al estado 71
+    IDENTIFICADOR  desplazar e ir al estado 11
+    CONSTANTE      desplazar e ir al estado 113
+
+    SINO  reduce usando la regla 46 (lista_sentencia_switch)
+    FIN   reduce usando la regla 46 (lista_sentencia_switch)
+
+    lista_variables         ir al estado 114
+    lista_sentencia_switch  ir al estado 146
+    lista_variables_switch  ir al estado 139
+
+
+estado 146
+
+   47 lista_sentencia_switch: lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch .
+
+    $default  reduce usando la regla 47 (lista_sentencia_switch)

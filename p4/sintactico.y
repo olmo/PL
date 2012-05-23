@@ -339,7 +339,7 @@ expresion : PARIZQ expresion PARDER {
 			}
 		
 		| expresion OP_RELACIONAL expresion 
-			{if($1.tipo==caracter || $1.tipo==booleano || $1.tipo==cadena || es_pila($1.tipo) || $3.tipo==caracter || $3.tipo==booleano || $3.tipo==cadena || es_pila($3.tipo)){
+			{ imprimeTS();if($1.tipo==caracter || $1.tipo==booleano || $1.tipo==cadena || es_pila($1.tipo) || $3.tipo==caracter || $3.tipo==booleano || $3.tipo==cadena || es_pila($3.tipo)){
 				printf("\nError Semantico en la linea %d: El operador %s se esta utilizando como: %s%s%s,  operador incompatible . \n", yylineno, $2.lexema, MostrarTipo($1.tipo),$2.lexema, MostrarTipo($3.tipo));
 				correcto = 0;
 			}
@@ -401,7 +401,7 @@ expresion : PARIZQ expresion PARDER {
 				correcto=1;
 			}
 		
-		| IDENTIFICADOR {$$.tipo = $1.tipo;}
+		| IDENTIFICADOR {$$.tipo = get_tipo($1.lexema);}
 		
 		| CONSTANTE {$$.tipo = $1.tipo;}
 		
