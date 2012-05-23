@@ -301,7 +301,12 @@ expresion : PARIZQ expresion PARDER {
 					if(es_pila($2.tipo) ==0 ){
 						printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba pila. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));
 					}else{
-						$$.tipo=$2.tipo;
+						if($1.atrib == 1)
+							$$.tipo = $2.tipo;
+						else if($1.atrib == 2)
+							$$.tipo = tipoPila($2.tipo);
+						else if($1.atrib == 3)
+							$$.tipo = booleano;
 					}
 				}
 			}
@@ -339,7 +344,7 @@ expresion : PARIZQ expresion PARDER {
 			}
 		
 		| expresion OP_RELACIONAL expresion 
-			{ imprimeTS();if($1.tipo==caracter || $1.tipo==booleano || $1.tipo==cadena || es_pila($1.tipo) || $3.tipo==caracter || $3.tipo==booleano || $3.tipo==cadena || es_pila($3.tipo)){
+			{ if($1.tipo==caracter || $1.tipo==booleano || $1.tipo==cadena || es_pila($1.tipo) || $3.tipo==caracter || $3.tipo==booleano || $3.tipo==cadena || es_pila($3.tipo)){
 				printf("\nError Semantico en la linea %d: El operador %s se esta utilizando como: %s%s%s,  operador incompatible . \n", yylineno, $2.lexema, MostrarTipo($1.tipo),$2.lexema, MostrarTipo($3.tipo));
 				correcto = 0;
 			}
@@ -362,6 +367,9 @@ expresion : PARIZQ expresion PARDER {
 			  	printf("\nError Semantico en la linea %d: El tipo de la pila es incompatible con el tipo de %s\n", yylineno, $3.lexema);
 			  	correcto = 0;
 			  }
+			  if(correcto==1)
+			  	$$.tipo=$1.tipo;
+			  else correcto = 1;
 			}
 		| expresion OP_OR expresion 
 			{if(($1.tipo!=booleano)||($3.tipo!=booleano)){
