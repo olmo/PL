@@ -26,6 +26,7 @@ char *nomproc;
 int numparam=0;
 char *iden;
 dtipo iden_tipo;
+dtipo tipoAux;
 
 dtipo tipo_pila;		//Diferente al nombre del procedimiento tipoPila
 int pilaError = 0;
@@ -81,8 +82,9 @@ int pilaError = 0;
 %token OP_AND 
 %token OP_RELACIONAL 
 %token OP_IGUALDAD 
+%token OPMASMAS
 
-
+%left OPMASMAS
 %left OP_OR
 %left OP_AND
 %left OP_IGUALDAD
@@ -151,20 +153,49 @@ asignacion_procedimiento: IDENTIFICADOR {iden = $1.lexema;} procedimientoOasigna
 
 procedimientoOasignacion: llamada_procedimiento | sentencia_asignacion;
 
-llamada_procedimiento : PARIZQ lista_expresiones_o_cadena PARDER PUNTOCOMA;
+llamada_procedimiento : PARIZQ {
+	if(existeProc(iden) == 0){
+		printf("\nError Semantico en la linea %d: no existe ningun procedimiento llamado %s\n", yylineno, iden);
+	}else{
+		numparam = numParametros(iden);
+	}
+	} lista_parametros_procedimiento PARDER PUNTOCOMA{
+	if(existeProc(iden)){
+		if(numParametros(iden) != argumentos){
+			printf("\nError Semantico en la linea %d: El procedimiento %s admite %d parametros, pero se le pasaron %d\n", yylineno, iden, numParametros(iden), argumentos);
+		}
+	}
+	argumentos = 1;
+	numparam = 0;
+	}
+
+lista_parametros_procedimiento: expresion {
+	$$.numArgumentos = 1;
+	
+	if($$.numArgumentos <= numparam){
+		if(tipoParametro($$.numArgumentos, iden) != $1.tipo){
+			printf("\nError Semantico en la linea %d: El parametro %s ha de ser de tipo %s.\n", yylineno, $1.lexema, MostrarTipo(tipoParametro($$.numArgumentos, iden)));}
+		}
+		} | lista_parametros_procedimiento COMA expresion{
+			$$.numArgumentos = 1+$1.numArgumentos;
+			if($$.numArgumentos <= numparam){
+				if(tipoParametro($$.numArgumentos, iden) != $3.tipo){ 
+					printf("\nError Semantico en la linea %d: El parametro %s ha de ser de tipo %s.\n", yylineno, $1.lexema, MostrarTipo(tipoParametro($$.numArgumentos, iden)));
+				}
+			}
+			argumentos++;
+		};		
 
 sentencia_asignacion : ASIGNACION expresion PUNTOCOMA {
 		
 		if(existe (iden)==0){
-			printf ("\nError Semantico en la linea %d: Identificador %s no esta declarado\n", yylineno, $1.lexema);}
-		else{
+			printf ("\nError Semantico en la linea %d: Identificador %s no esta declarado\n", yylineno, $1.lexema);
+		}else{
 			iden_tipo=get_tipo (iden);
 			
-			if(iden_tipo!=$3.tipo)
+			if(iden_tipo!=$2.tipo)
 				printf ("\nError Semantico en la linea %d: Asignacion de tipos incompatibles, no se puede asignar un %s a un %s\n", yylineno,MostrarTipo($3.tipo),MostrarTipo(iden_tipo));
-			else{
-				//Comprobar pila
-			}
+			
 		}
 	};
 
@@ -181,13 +212,53 @@ sentencia_if : SI expresion {
 				}
 			ENTONCES sentencia;
 
-sentencia_switch : CASO IDENTIFICADOR DE lista_variables_switch DOSPUNTOS sentencia lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN;
+sentencia_switch : CASO IDENTIFICADOR {
+	if ($2.tipo != entero || $2.tipo != real || $2.tipo != caracter || $2.tipo != booleano)
+		printf("\nError Semantico en la linea %d: El tipo de %s es incompatible con la estructura CASO.\n", yylineno, $2.lexema);
+	else{ tipoAux = $2.tipo;};
+	}DE lista_variables_switch{
+	if( $4.tipo != $2.tipo ){
+		printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible con el tipo de %s\n", yylineno, $2.lexema);
+	}
+	}DOSPUNTOS sentencia lista_variables_switch{
+	if( $7.tipo != $2.tipo ){
+		printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible con el tipo de %s\n", yylineno, $2.lexema);
+	}
+	} DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN;
 
 opcion_switch_sino : |  SINO sentencia;
 
-lista_sentencia_switch : | lista_variables_switch DOSPUNTOS sentencia lista_sentencia_switch; 
+lista_sentencia_switch : | lista_variables_switch{
+		if( tipoAux != $1.tipo){
+			printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible\n", yylineno);
+		}
+		} DOSPUNTOS sentencia lista_sentencia_switch; 
 
-lista_variables_switch: lista_variables | CONSTANTE lista_constantes;
+lista_variables_switch: lista_variables_en_switch {$$.tipo = $1.tipo;} | CONSTANTE {$$.tipo = $1.tipo;} lista_constantes{
+						if($2.tipo != $1.tipo){
+							printf("\nError Semantico en la linea %d: Se esperaba una constante del mismo tipo que %s\n", yylineno, $1.lexema);
+						}
+					};
+					
+lista_variables_en_switch : IDENTIFICADOR lista_identificador_en_switch {
+	if(existe($1.lexema)==0){
+		printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $1.lexema);} 
+	else if($1.tipo != $2.tipo){
+		printf("\nError Semantico en la linea %d: La variable %s no es del mismo tipo que el resto de la lista\n", yylineno, $1.lexema);} 
+	else{
+		$$.tipo = $2.tipo;
+		}
+	}
+				| error;
+
+lista_identificador_en_switch : | COMA IDENTIFICADOR lista_identificador_en_switch {
+				if(existe($2.lexema)==0){
+					printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $2.lexema);} 
+				else if($2.tipo != $3.tipo){
+					 printf("\nError Semantico en la linea %d: La variable %s no es del mismo tipo que el resto de la lista\n", yylineno, $2.lexema);} 
+				else{
+					$$.tipo = $2.tipo;}
+				}
 
 sentencia_while : MIENTRAS expresion {
 						if($2.tipo!=booleano){
@@ -196,7 +267,18 @@ sentencia_while : MIENTRAS expresion {
 					}
 				HACER sentencia FIN;
 
-sentencia_entrada : LEER lista_variables PUNTOCOMA;
+sentencia_entrada : LEER lista_variables_entrada PUNTOCOMA;
+
+lista_variables_entrada: IDENTIFICADOR lista_identificador_entrada {
+		if(existe($1.lexema)==0){
+			printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $1.lexema);} 
+		}
+				| error;
+				
+lista_identificador_entrada : | COMA IDENTIFICADOR lista_identificador_entrada {
+		if(existe($2.lexema)==0){
+			printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $2.lexema);} 
+		};
 
 sentencia_salida : ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA;
 
@@ -209,27 +291,98 @@ expresion : PARIZQ expresion PARDER {
 			}
 		
 		| OPUNARIO expresion {
-				if($2.tipo!=booleano && ($2.atrib==0 || $2.atrib==1)){
-					printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba boolean. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));}
-				else{
-					$$.tipo=$2.tipo;
+				if($1.atrib == 0){		//Operador no
+					if($2.tipo!=booleano && ($2.atrib==0 || $2.atrib==1)){
+						printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba boolean. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));
+					}else{
+						$$.tipo=$2.tipo;
+					}
+				}else if($1.atrib != 0){
+					if(es_pila($2.tipo) ==0 ){
+						printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba pila. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));
+					}else{
+						$$.tipo=$2.tipo;
+					}
 				}
 			}
 		
 		| expresion OP_MULDIV expresion {
-				if($1.tipo==booleano || $3.tipo==booleano){
-					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando un booleano. \n", yylineno, $2.lexema);
+				if(($1.tipo==booleano || $3.tipo==booleano) || ($1.tipo == cadena || $1.tipo == cadena)){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando con un booleano o cadena. \n", yylineno, $2.lexema);
 					correcto = 0;
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
+						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
+						correcto = 0;
+				}else if(es_pila($1.tipo) ==1 && tipoPila($1.tipo) != $3.tipo){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+						correcto = 0;
+				}else if(es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+						correcto = 0;
 				}
 			}
 			
-		| expresion SIGNO expresion 
+		| expresion SIGNO expresion {
+			if(($1.tipo==booleano || $3.tipo==booleano) || ($1.tipo == cadena || $1.tipo == cadena)){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando con un booleano o cadena. \n", yylineno, $2.lexema);
+					correcto = 0;
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
+						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
+						correcto = 0;
+				}else if(es_pila($1.tipo) ==1 && tipoPila($1.tipo) != $3.tipo){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+						correcto = 0;
+				}else if(es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+						correcto = 0;
+				}
+			}
 		
 		| expresion OP_RELACIONAL expresion 
-		
+			{if((($1.tipo!=entero)||($3.tipo!=entero)) || (($1.tipo!=real)||($3.tipo!=real))){
+				printf("\nError Semantico en la linea %d: El operador %s se esta utilizando como: %s%s%s,  operador incompatible . \n", yylineno, $2.lexema, MostrarTipo($1.tipo),$2.lexema, MostrarTipo($3.tipo));
+				correcto = 0;
+			}
+			else{
+				if(($1.tipo)!=($3.tipo)){
+					printf ("\nError Semantico en la linea %d: Tipos incompatibles: %s incompatible con %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
+					correcto = 0;
+				}
+			}
+			if(correcto==1)
+				$$.tipo=booleano;	
+			else
+				correcto=1;
+			}
+		| expresion OPMASMAS expresion
+			{ if(es_pila($1.tipo) == 0){		//La primera expresion no es una pila
+				printf("\nError Semantico en la linea %d: %s ha de ser de tipo pila.\n", yylineno, $1.lexema);
+				correcto = 0;
+			  }else if(tipoPila($1.tipo) != $3.tipo){
+			  	printf("\nError Semantico en la linea %d: El tipo de la pila es incompatible con el tipo de %s\n", yylineno, $3.lexema);
+			  	correcto = 0;
+			  }
+			}
 		| expresion OP_OR expresion 
-		
+			{if(($1.tipo!=booleano)||($3.tipo!=booleano)){
+				printf("\nError Semantico en la linea %d: El operador %s se ha de utilizar con tipos booleanos . \n", yylineno, $2.lexema);
+				correcto = 0;
+			}
+			if(correcto==1)
+				$$.tipo=booleano;	
+			else
+				correcto=1;
+			}
 		| expresion OP_AND expresion 
+			{if(($1.tipo!=booleano)||($3.tipo!=booleano)){
+				printf("\nError Semantico en la linea %d: El operador %s se ha de utilizar con tipos booleanos . \n", yylineno, $2.lexema);
+				correcto = 0;
+			}
+			if(correcto==1)
+				$$.tipo=booleano;	
+			else
+				correcto=1;
+			}
 		
 		| expresion OP_IGUALDAD expresion {
 			if(($1.tipo==cadena)||($3.tipo==cadena)){
@@ -248,15 +401,15 @@ expresion : PARIZQ expresion PARDER {
 				correcto=1;
 			}
 		
-		| IDENTIFICADOR 
+		| IDENTIFICADOR {$$.tipo = $1.tipo;}
 		
-		| CONSTANTE 
+		| CONSTANTE {$$.tipo = $1.tipo;}
 		
 		| agregado 
 		
-		| SIGNO expresion %prec OPUNARIO {
+		| SIGNO expresion {
 				if($2.tipo!=entero && $2.tipo!=real){
-					printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba entero o real. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));}
+					printf ("\nError Semantico en la linea %d: El operador %s es incompatible con tipo: %s, se esperaba entero o real. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));}
 				else{
 					$$.tipo=$2.tipo;
 				}
@@ -264,9 +417,14 @@ expresion : PARIZQ expresion PARDER {
 		
 		| error;
 
-agregado : LLAVEIZQ CONSTANTE lista_constantes LLAVEDER;
+agregado : LLAVEIZQ CONSTANTE {$$.tipo = $2.tipo;} lista_constantes {if($3.tipo != $2.tipo)
+		printf("Error Semantico en la linea %d: La constante %s tiene un tipo diferente al resto del agregado\n", yylineno, $2.lexema);
+	} LLAVEDER;
 
-lista_constantes : | COMA CONSTANTE lista_constantes;
+lista_constantes : | COMA CONSTANTE {$$.tipo = $2.tipo;} lista_constantes{
+	if($3.tipo != $2.tipo)
+		printf("Error Semantico en la linea %d: La constante %s tiene un tipo diferente al resto de constantes\n", yylineno, $2.lexema);
+	}
 
 tipo : TIPOSIMPLE {asignarTipoCascada($1.tipo);} | PILA TIPOSIMPLE {esPila();asignarTipoCascada($2.tipo);};
 

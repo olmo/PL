@@ -63,6 +63,8 @@ otros    		.
 "booleano"				{ yylval.atrib=2; yylval.tipo=booleano; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
 "caracter"				{ yylval.atrib=3; yylval.tipo=caracter; yylval.lexema=strdup(yytext); return TIPOSIMPLE;}
 
+"++"					{yylval.atrib=0; yylval.lexema = strdup(yytext); return OPMASMAS;}
+
 {signo}					{ yylval.lexema=strdup(yytext); return SIGNO;}
 
 "("						{return PARIZQ;}

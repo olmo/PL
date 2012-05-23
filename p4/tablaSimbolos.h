@@ -34,6 +34,7 @@ typedef struct {
 	int atrib ; 				/* Atributo del símbolo (si tiene) */
 	char *lexema ; 				/* Nombre del lexema */
 	dtipo tipo ; 				/* Tipo del símbolo */
+	int numArgumentos;
 } atributos ;
 
 #define YYSTYPE atributos 		/* A partir de ahora, cada símbolo tiene una estructura de tipo atributos*/
@@ -266,20 +267,7 @@ void IntroFinBloq () {
 	
 }
 
-void existeProc (char *lexema) {
-/*comprueba que existe un nombre de procedimiento declarado igual al que se le pasa*/
-	int i;
-	int igual=0;
-	for (i=TOPE+1; i>=0 && TS[TOPE].entrada!=marca; i--)
-		if (TS[i].entrada == procedimiento && !strcmp(TS[i].nombre, lexema))
-			igual=1;
-
-	if(igual==0)
-		printf ("\nError Semantico en la linea %d: El procedimiento %s no est?declarado\n", yylineno, lexema);
-}
-
-
-int existeProc2 (char *lexema) {
+int existeProc (char *lexema) {
 /*comprueba que existe un nombre de procedimiento declarado igual al que se le pasa*/
 	int i;
 	int igual=0;

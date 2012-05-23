@@ -39,4 +39,6 @@
 #define OP_RELACIONAL 292
 #define OP_IGUALDAD 293
 
+#define OPMASMAS 294
+
 
