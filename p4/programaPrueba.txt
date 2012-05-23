@@ -67,6 +67,8 @@ inicio
 					valor := 5;
 		fin;
 		
+		procB(dato,verdadero);
+		
 		leer valor;
 		si d1>0.0 entonces
 			inicio
@@ -84,6 +86,8 @@ inicio
 			d1 := d1/1000.0;
 			fin
 	fin;
+	
+	procD(xf);
 	
 	pe := pe++10; (* inserta 10 en la pila 'pe' *)
 	pf := pf++10.0; (* inserta 10.0 en la pila 'pf' *)
