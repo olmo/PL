@@ -204,7 +204,65 @@ lista_expresiones_o_cadena : expresion_cad | expresion_cad COMA lista_expresione
 
 expresion_cad : expresion | CADENA;
 
-expresion : PARIZQ expresion PARDER | OPUNARIO expresion | expresion OP_MULDIV expresion | expresion SIGNO expresion | expresion OP_RELACIONAL expresion | expresion OP_OR expresion | expresion OP_AND expresion | expresion OP_IGUALDAD expresion | IDENTIFICADOR | CONSTANTE |  agregado | SIGNO expresion %prec OPUNARIO | error;
+expresion : PARIZQ expresion PARDER {
+				$$.tipo=$2.tipo;
+			}
+		
+		| OPUNARIO expresion {
+				if($2.tipo!=booleano && ($2.atrib==0 || $2.atrib==1)){
+					printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba boolean. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));}
+				else{
+					$$.tipo=$2.tipo;
+				}
+			}
+		
+		| expresion OP_MULDIV expresion {
+				if($1.tipo==booleano || $3.tipo==booleano){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando un booleano. \n", yylineno, $2.lexema);
+					correcto = 0;
+				}
+			}
+			
+		| expresion SIGNO expresion 
+		
+		| expresion OP_RELACIONAL expresion 
+		
+		| expresion OP_OR expresion 
+		
+		| expresion OP_AND expresion 
+		
+		| expresion OP_IGUALDAD expresion {
+			if(($1.tipo==cadena)||($3.tipo==cadena)){
+				printf("\nError Semantico en la linea %d: El operador %s se esta utilizando como: %s%s%s,  operador incompatible con cadenas y . \n", yylineno, $2.lexema, MostrarTipo($1.tipo),$2.lexema, MostrarTipo($3.tipo));
+				correcto = 0;
+			}
+			else{
+				if(($1.tipo)!=($3.tipo)){
+					printf ("\nError Semantico en la linea %d: Tipos incompatibles: %s incompatible con %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
+					correcto = 0;
+				}
+			}
+			if(correcto==1)
+				$$.tipo=booleano;	
+			else
+				correcto=1;
+			}
+		
+		| IDENTIFICADOR 
+		
+		| CONSTANTE 
+		
+		| agregado 
+		
+		| SIGNO expresion %prec OPUNARIO {
+				if($2.tipo!=entero && $2.tipo!=real){
+					printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba entero o real. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));}
+				else{
+					$$.tipo=$2.tipo;
+				}
+			}
+		
+		| error;
 
 agregado : LLAVEIZQ CONSTANTE lista_constantes LLAVEDER;
 
