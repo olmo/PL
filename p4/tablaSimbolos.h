@@ -129,13 +129,11 @@ int es_repetida(char *lexema) {
 	/* Comprobar si ya existe otro con el mismo lexema en el mismo
 	   bloque */
 	for (i=TOPE; TS[i].entrada != marca; i--){
-
 		if (!strcmp(TS[i].nombre, lexema) && TS[i].entrada != parametro) {
 			printf ("\nError Semantico en la linea %d: Identificador %s ya esta declarado\n", yylineno, lexema);
 			return 1;
 		}
 	}
-
 	return 0;
 }
 
@@ -144,7 +142,7 @@ int existe (char *lexema) {
 	/* Devuelve 1 si esta definida una variable con el nombre especificado
 	   o 0 en caso contrario */
 	long int temp;
-
+		
 	for (temp=TOPE; temp>0;temp--)
 		if (TS[temp].entrada == variable && !strcmp(TS[temp].nombre, lexema))
 			return 1;
@@ -158,17 +156,20 @@ void InsertarElemento(tipoEntrada tipo, char* lexema){
 	//Insertamos un elemento en la tabla de simbolos
 
 	TOPE++;
-	TS[TOPE].entrada = tipo;
-	TS[TOPE].nombre = strdup(lexema);
-	TS[TOPE].tipoDato = no_asignado;
-	TS[TOPE].pila=0;
+	TS[TOPE].entrada = tipo;		
+	TS[TOPE].nombre = strdup(lexema);		
+	TS[TOPE].tipoDato = no_asignado;		
+	TS[TOPE].pila=0;		
 	if( tipo == procedimiento)
 		TS[TOPE].parametros = 0;
 	
 }
 
 void esPila(){
-	TS[TOPE].pila=1;
+	int i;
+	for (i=TOPE; TS[i].entrada==variable && TS[i].tipoDato == no_asignado; i--){
+		TS[i].pila=1;
+	}
 }
 
 void asignarTipo (dtipo tipo, int posicion) {

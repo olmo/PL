@@ -97,15 +97,15 @@ int pilaError = 0;
 **/
 
 
-programa : PROGRAMA {printf("HOLA\n");} bloque PUNTO {imprimeTS();};
+programa : PROGRAMA bloque PUNTO {imprimeTS();};
 
-bloque : INICIO {IntroIniBloq();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
+bloque : INICIO {IntroIniBloq();} declar_de_variables_locales  declar_de_subprogs sentencias FIN {IntroFinBloq();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
 declar_subprog : cabecera_subprograma bloque PUNTOCOMA;
 
-declar_de_variables_locales : | INIVAR variables_locales FINVAR;
+declar_de_variables_locales : | INIVAR  variables_locales FINVAR;
 
 variables_locales : cuerpo_declar_variables variables_locales | cuerpo_declar_variables;
 
@@ -122,7 +122,7 @@ lista_identificador : | COMA IDENTIFICADOR lista_identificador {if(es_repetida($
 														InsertarElemento(variable, $2.lexema);} 
 													};
 
-cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ {
+cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ { 
 								if(es_repetida($2.lexema)==0){
 									InsertarElemento(procedimiento,$2.lexema);asignarTipo (desconocido, TOPE);
 								} 
@@ -137,7 +137,7 @@ sentencias : | sentencias sentencia;
 
 sentencia : bloque | asignacion_procedimiento | sentencia_if | sentencia_switch | sentencia_while | sentencia_entrada | sentencia_salida | error;
 
-asignacion_procedimiento: IDENTIFICADOR procedimientoOasignacion {iden = $1.lexema;};
+asignacion_procedimiento: IDENTIFICADOR {iden = $1.lexema;} procedimientoOasignacion ;
 
 procedimientoOasignacion: llamada_procedimiento | sentencia_asignacion;
 
@@ -200,7 +200,7 @@ agregado : LLAVEIZQ CONSTANTE lista_constantes LLAVEDER;
 
 lista_constantes : | COMA CONSTANTE lista_constantes;
 
-tipo : TIPOSIMPLE {asignarTipoCascada($1.tipo);} | PILA TIPOSIMPLE {esPila();asignarTipoCascada($1.tipo);};
+tipo : TIPOSIMPLE {asignarTipoCascada($1.tipo);} | PILA TIPOSIMPLE {esPila();asignarTipoCascada($2.tipo);};
 
 %%
 /** aqui incluimos el fichero generado por el 'lex'

@@ -5,13 +5,13 @@ inivar
 	e, f, g, vf: real;
 	vc: caracter;
 	vl: booleano;
-	pe, pe2: p··ila entero;
+	pe, pe2: pila entero;
 	pf, pf2: pila real;
 	pc, pc2: pila caracter;
 	pl: pila booleano;
 finvar
 
-procedimiento procA( a1 c: entero; a2: real; a3: caracter)
+procedimiento procA( a1, c: entero; a2: real; a3: caracter)
 inicio
 	inivar 
 		x1, x2, x3: entero;
