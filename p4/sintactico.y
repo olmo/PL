@@ -99,9 +99,9 @@ int pilaError = 0;
 **/
 
 
-programa : PROGRAMA bloque PUNTO {imprimeTS();};
+programa : PROGRAMA bloque PUNTO;
 
-bloque : INICIO {IntroIniBloq();} declar_de_variables_locales {imprimeTS();}  declar_de_subprogs {imprimeTS();} sentencias FIN {IntroFinBloq();};
+bloque : INICIO {IntroIniBloq();} declar_de_variables_locales declar_de_subprogs sentencias FIN {IntroFinBloq();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
@@ -194,7 +194,7 @@ sentencia_asignacion : ASIGNACION expresion PUNTOCOMA {
 			iden_tipo=get_tipo (iden);
 			
 			if(iden_tipo!=$2.tipo)
-				printf ("\nError Semantico en la linea %d: Asignacion de tipos incompatibles, no se puede asignar un %s a un %s\n", yylineno,MostrarTipo($3.tipo),MostrarTipo(iden_tipo));
+				printf ("\nError Semantico en la linea %d: Asignacion de tipos incompatibles, no se puede asignar un %s a un %s\n", yylineno,MostrarTipo($2.tipo),MostrarTipo(iden_tipo));
 			
 		}
 	};
@@ -339,7 +339,7 @@ expresion : PARIZQ expresion PARDER {
 			}
 		
 		| expresion OP_RELACIONAL expresion 
-			{if((($1.tipo!=entero)||($3.tipo!=entero)) || (($1.tipo!=real)||($3.tipo!=real))){
+			{if($1.tipo==caracter || $1.tipo==booleano || $1.tipo==cadena || es_pila($1.tipo) || $3.tipo==caracter || $3.tipo==booleano || $3.tipo==cadena || es_pila($3.tipo)){
 				printf("\nError Semantico en la linea %d: El operador %s se esta utilizando como: %s%s%s,  operador incompatible . \n", yylineno, $2.lexema, MostrarTipo($1.tipo),$2.lexema, MostrarTipo($3.tipo));
 				correcto = 0;
 			}
@@ -407,7 +407,7 @@ expresion : PARIZQ expresion PARDER {
 		
 		| agregado 
 		
-		| SIGNO expresion {
+		| SIGNO expresion %prec OPUNARIO {
 				if($2.tipo!=entero && $2.tipo!=real){
 					printf ("\nError Semantico en la linea %d: El operador %s es incompatible con tipo: %s, se esperaba entero o real. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));}
 				else{
