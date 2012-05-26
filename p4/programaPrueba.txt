@@ -1,11 +1,12 @@
 programa
 inicio
 inivar
-	a, b, c, ve: entero;
-	e, f, g, vf: real;
+	ve: entero;
+	vf: real;
 	vc: caracter;
 	vl: booleano;
-	pe, pe2: pila entero;
+	pe, pe2: pi·la entero
+	pec, pe2c: pila entero;
 	pf, pf2: pila real;
 	pc, pc2: pila caracter;
 	pl: pila booleano;
@@ -14,37 +15,33 @@ finvar
 procedimiento procA( a1: entero; a2: real; a3: caracter)
 inicio
 	inivar 
-		x1, x2, x3: entero;
-		y1, y2, y3: entero;
+		x1,a2, x2: entero;
 	finvar
 	
 	procedimiento procB(b1: caracter; b2: booleano)
 	inicio
 		inivar
 			xf, x2: real;
-			asdf: real;
 		finvar
 		
 		procedimiento procC(c1: booleano; c2: entero)
 		inicio
 			inivar
 				x1: real;
-				qwerty: entero;
 			finvar
 			
 			x1 := 1.3;
 			si c2>10 entonces
-				c2 := c2-1+(6-(2*5));
+				c2 := c2-1;
 			sino
 				x1:=3.1;
 		fin;
 		
 		procC(verdad,10);
-		asdf :=xf/10.0;
-		procC(falso,1);
-		procC(verdad,23);
+		procA(2*ve,vf,'a');
+		procA('a',ve);
 		
-		mientras x2*xf < 10.0 hacer
+		mientras x2-xf < 10.0 hacer
 			x2 :=x2*xf;
 		fin
 	fin;
@@ -59,7 +56,7 @@ inicio
 		procedimiento procE(e1: caracter; e2:caracter)
 		inicio
 			leer e1,e2;
-			si e1='a' entonces
+			si (e1='a')*3 entonces
 				valor := 5;
 			sino 
 				si e1='b' entonces
@@ -68,19 +65,15 @@ inicio
 					valor := 5;
 		fin;
 		
-		procB(qwerty,2,6);
-		
 		leer valor;
 		si d1>0.0 entonces
 			inicio
-			inivar
-				dato: entero;
-				b: booleano;
-			finvar
-			
-			dato := 2;
-			ve:=#pe <> vf;
-			dato := valor * ((10+5 +7/ 5-(2*2))+(6-7/2 / 6+8)+5);
+				inivar
+					dato: entero;
+				finvar
+				
+				dato := 2;
+				dato := valor * 20/dato;
 			fin
 		sino
 			inicio
@@ -89,9 +82,9 @@ inicio
 			fin
 	fin;
 	
-	procD(xf);
-	
 	pe := pe++10; (* inserta 10 en la pila 'pe' *)
+	pec := pec * ve;
+	pec := pec -vf;
 	pf := pf++10.0; (* inserta 10.0 en la pila 'pf' *)
 	pc := pc++'#'; (* inserta # en la pila 'pc' *)
 	
@@ -99,12 +92,16 @@ inicio
 		inicio
 		ve := #pe;
 		pe := &pe;
+<<<<<<< HEAD
 		pe := {5.7,6.0};
+=======
+>>>>>>> 874da61fe19b9ede0a17ce25b3d3f53bd78fe52f
 		fin
 	sino
 		inicio
 		pe := pe*pe2;
 		pe := pe2 - pe++10 * (20/2000);
+		pec := vf;
 		fin
 fin;
 fin.

@@ -111,7 +111,9 @@ declar_de_variables_locales : | INIVAR  variables_locales FINVAR;
 
 variables_locales : cuerpo_declar_variables variables_locales | cuerpo_declar_variables;
 
-cuerpo_declar_variables : lista_variables DOSPUNTOS tipo opcion_asign_variable PUNTOCOMA | error; 
+cuerpo_declar_variables : asdf PUNTOCOMA | error; 
+
+asdf : lista_variables DOSPUNTOS tipo opcion_asign_variable | error;
 
 opcion_asign_variable : ASIGNACION expresion | ;
 
@@ -311,8 +313,6 @@ expresion : PARIZQ expresion PARDER {
 				if(($1.tipo==booleano || $3.tipo==booleano) || ($1.tipo == cadena || $1.tipo == cadena)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando con un booleano o cadena. \n", yylineno, $2.lexema);
 					correcto = 0;
-				}else if($1.tipo!=$3.tipo){
-					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
 						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
@@ -322,6 +322,8 @@ expresion : PARIZQ expresion PARDER {
 				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
+				}else if(es_pila($1.tipo)==0 && es_pila($3.tipo)==0 && $1.tipo!=$3.tipo){
+					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 				}
 			}
 			
@@ -329,8 +331,6 @@ expresion : PARIZQ expresion PARDER {
 			if(($1.tipo==booleano || $3.tipo==booleano) || ($1.tipo == cadena || $1.tipo == cadena)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando con un booleano o cadena. \n", yylineno, $2.lexema);
 					correcto = 0;
-				}else if($1.tipo!=$3.tipo){
-					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
 						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
@@ -340,6 +340,8 @@ expresion : PARIZQ expresion PARDER {
 				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
+				}else if(es_pila($1.tipo)==0 && es_pila($3.tipo)==0 && $1.tipo!=$3.tipo){
+					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 				}
 			}
 		
@@ -352,13 +354,9 @@ expresion : PARIZQ expresion PARDER {
 				if(($1.tipo)!=($3.tipo)){
 					printf ("\nError Semantico en la linea %d: Tipos incompatibles: %s incompatible con %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 					correcto = 0;
-				}
+				}else $$.tipo = booleano;
 			}
-			if(correcto==1)
-				$$.tipo=booleano;	
-			else
-				correcto=1;
-			}
+		}
 		| expresion OPMASMAS expresion
 			{ if(es_pila($1.tipo) == 0){		//La primera expresion no es una pila
 				printf("\nError Semantico en la linea %d: %s ha de ser de tipo pila.\n", yylineno, $1.lexema);
@@ -366,10 +364,8 @@ expresion : PARIZQ expresion PARDER {
 			  }else if(tipoPila($1.tipo) != $3.tipo){
 			  	printf("\nError Semantico en la linea %d: El tipo de la pila es incompatible con el tipo de %s\n", yylineno, $3.lexema);
 			  	correcto = 0;
-			  }
-			  if(correcto==1)
-			  	$$.tipo=$1.tipo;
-			  else correcto = 1;
+			  }else $$.tipo = $1.tipo;
+			  
 			}
 		| expresion OP_OR expresion 
 			{if(($1.tipo!=booleano)||($3.tipo!=booleano)){
@@ -401,14 +397,10 @@ expresion : PARIZQ expresion PARDER {
 				if(($1.tipo)!=($3.tipo)){
 					printf ("\nError Semantico en la linea %d: Tipos incompatibles: %s incompatible con %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 					correcto = 0;
-				}
+				}else{ $$.tipo = booleano;}
 			}
-			if(correcto==1)
-				$$.tipo=booleano;	
-			else
-				correcto=1;
-			}
-		
+			
+		}
 		| IDENTIFICADOR {
 			if(existe($1.lexema)==0)
 				printf("\nError Semantico en la linea %d: El identificador %s no esta declarado\n", yylineno, $1.lexema);
@@ -437,7 +429,7 @@ lista_constantes : | COMA CONSTANTE{
 	
 	;
 
-tipo : TIPOSIMPLE {asignarTipoCascada($1.tipo);} | PILA TIPOSIMPLE {esPila();asignarTipoCascada($2.tipo);};
+tipo : TIPOSIMPLE {asignarTipoCascada($1.tipo);} | PILA TIPOSIMPLE {esPila();asignarTipoCascada($2.tipo);} | error{asignarTipoCascada(desconocido);};
 
 %%
 /** aqui incluimos el fichero generado por el 'lex'
