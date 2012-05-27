@@ -1,8 +1,8 @@
 programa
 inicio
 inivar
-	a, b, c, ve: entero;
-	e, f, g, vf: real;
+	a, b, c, ve: entero := 1+2*(7-4);
+	e, f, g, vf: real := 2.0;
 	vc: caracter;
 	vl: booleano;
 	pe, pe2: pila entero;
@@ -68,7 +68,6 @@ inicio
 					valor := 5;
 		fin;
 		
-		procB(qwerty,2,6);
 		
 		leer valor;
 		si d1>0.0 entonces
@@ -79,8 +78,7 @@ inicio
 			finvar
 			
 			dato := 2;
-			ve:=#pe <> vf;
-			dato := valor * ((10+5 +7/ 5-(2*2))+(6-7/2 / 6+8)+5);
+			dato := valor * ((10+5 +(7/ 5)-(2*2))+(6-((7/2) / 6)+8)+5);
 			fin
 		sino
 			inicio
@@ -89,17 +87,16 @@ inicio
 			fin
 	fin;
 	
-	procD(xf);
+	
 	
 	pe := pe++10; (* inserta 10 en la pila 'pe' *)
 	pf := pf++10.0; (* inserta 10.0 en la pila 'pf' *)
 	pc := pc++'#'; (* inserta # en la pila 'pc' *)
 	
-	si #(pe++20)=20 entonces
+	si no(#(pe++20)=20) entonces
 		inicio
 		ve := #pe;
 		pe := &pe;
-		pe := {5.7,6.0};
 		fin
 	sino
 		inicio
