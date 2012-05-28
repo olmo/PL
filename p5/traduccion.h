@@ -107,7 +107,7 @@ void seleccionar_fProc(){
 }
 
 void escribir_cabecera(){//hay que añadir los includes
-	fprintf(fichOut,"#include \"dec_fun\"\n#include \"dec_dat\"\n#include <stdio.h>\n\nint main()");
+	fprintf(fichOut,"#include \"dec_fun\"\n#include \"Stack.h\"\n#include <stdio.h>\n\nint main()");
 
 }
 
@@ -115,20 +115,25 @@ void cerrar_main(){
 	fprintf(fichOut,"return 0;\n");
 }
 
-char* TraducirTipo(dtipo tipo){
+char* TraducirTipo(dtipo tipo, int isPila){
 	char* tipoChar = (char*)malloc(15*sizeof(char));
-	if(tipo == 0 || tipo == 3){
-		strcpy(tipoChar, "int");
-	}else if(tipo == 1){
-		strcpy(tipoChar, "float");
-	}else if(tipo == 2){
-		strcpy(tipoChar, "char");
-	}else if(tipo == 4 || tipo == 7){
-		strcpy(tipoChar, "stack int");
-	}else if(tipo == 5){
-		strcpy(tipoChar, "stack float");
-	}else if(tipo == 6){
-		strcpy(tipoChar, "stack char");
+	if(isPila){
+		if(tipo == 0 || tipo == 2 || tipo == 3)
+			strcpy(tipoChar, "Stack");
+		else if(tipo == 1)
+			strcpy(tipoChar, "PilaFloat");
+	}else{
+		if(tipo == 0 || tipo == 3){
+			strcpy(tipoChar, "int");
+		}else if(tipo == 1){
+			strcpy(tipoChar, "float");
+		}else if(tipo == 2){
+			strcpy(tipoChar, "char");
+		}else if(tipo == 4 || tipo == 7 || tipo == 6){
+			strcpy(tipoChar, "Stack");
+		}else if(tipo == 5){
+			strcpy(tipoChar, "PilaFloat");
+		}
 	}
 	
 	return tipoChar;
@@ -163,7 +168,7 @@ void actualiza_tipo(char* tipo){
 	tipo_actual = tipo;
 }
 
-void escribe_elemento(char *el){
+void escribir(FILE* fich, char *el){
 	fprintf(fichOut,"%s",el);
 
 }
@@ -172,13 +177,24 @@ void escribe_coma(){
 	fprintf(fichOut,", ");
 }
 
-void escribir_variables(FILE* fich, char *tipo){
+void escribirListaParametros(FILE* fich, char* tipo, int num){
+	actualiza_tipo(tipo);
+	int i;
+	
+	for(i=TOPE; TS[i].entrada == parametro && num >0; i--, num--)
+		fprintf(fich,"%s %s, ", tipo, TS[i].nombre);
+		
+	fseek(fich, -2, SEEK_CUR); 	//Nos colocamos sobre la ultima coma (,)
+	
+	fprintf(fich, " ");				//Se borra la ultima coma
+	
+} 
+void escribirVariables(FILE* fich, char *tipo){
 	actualiza_tipo(tipo);
 	int i;
 	
 	for (i=TOPE; TS[i].entrada==variable && TS[i].tipoDato == no_asignado; i--){
-		
-		escribir_1var(fich, TS[i].nombre);
+			escribir_1var(fich, TS[i].nombre);
 	}
 
 	fprintf(fich,"\n");
@@ -385,9 +401,8 @@ void escribe_argumentos(char* nomProc){
 }
 
 
-void escribe_void_argumentos(char *iden){
+void escribirProc(char *iden){
 	fprintf(fichOut,"\nvoid %s(",iden); 
-	escribe_argumentos(iden);
 }
 
 

@@ -28,6 +28,7 @@ char *iden;
 dtipo iden_tipo;
 dtipo tipoAux;
 int numVarDeclaradas = 0;
+char listaArgumentos[1000];
 
 dtipo tipo_pila;		//Diferente al nombre del procedimiento tipoPila
 int pilaError = 0;
@@ -136,23 +137,36 @@ lista_identificador : | COMA IDENTIFICADOR lista_identificador {if(es_repetida($
 
 cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ { 
 								if(es_repetida($2.lexema)==0){
-									InsertarElemento(procedimiento,$2.lexema);asignarTipo (desconocido, TOPE);
+									InsertarElemento(procedimiento,$2.lexema);
+									asignarTipo (desconocido, TOPE);
+									escribirProc($2.lexema);
 								} 
 							}
-						variables_subprograma {CuentaParametros ();} PARDER;
+						variables_subprograma {CuentaParametros ();} PARDER{escribir(actual,");\n");};
 
-variables_subprograma : | lista_parametros DOSPUNTOS tipo lista_variables_subprograma | error;
+variables_subprograma : {numVarDeclaradas = 0;}| lista_parametros DOSPUNTOS tipo {
+			escribirListaParametros(actual, TraducirTipo($3.tipo, 0), numVarDeclaradas); 
+			numVarDeclaradas = 0;
+			} lista_variables_subprograma | error;
 
 													
-lista_variables_subprograma : | PUNTOCOMA lista_parametros DOSPUNTOS tipo lista_variables_subprograma | error;
+lista_variables_subprograma : | PUNTOCOMA lista_parametros DOSPUNTOS tipo{
+			escribirListaParametros(actual, TraducirTipo($4.tipo, 0), numVarDeclaradas); 
+			numVarDeclaradas = 0;
+			} 		
+			lista_variables_subprograma | error;
 
 lista_parametros : IDENTIFICADOR lista_identificador_parametros {if(es_repetida($1.lexema)==0){
-														InsertarElemento(parametro, $1.lexema);} 
+														InsertarElemento(parametro, $1.lexema);
+														numVarDeclaradas++;
+														} 
 													}
 				| error;
 
 lista_identificador_parametros : | COMA IDENTIFICADOR lista_identificador_parametros {if(es_repetida($2.lexema)==0){
-														InsertarElemento(parametro, $2.lexema);} 
+														InsertarElemento(parametro, $2.lexema);
+														numVarDeclaradas++;
+														}  
 													};
 
 sentencias : | sentencias sentencia;
@@ -173,11 +187,17 @@ llamada_procedimiento : PARIZQ {
 	if(existeProc(iden)){
 		if(numParametros(iden) != argumentos){
 			printf("\nError Semantico en la linea %d: El procedimiento %s admite %d parametros, pero se le pasaron %d\n", yylineno, iden, numParametros(iden), argumentos);
+		}else{
+			escribir(actual, "\n");
+			escribir(actual, iden);
+			escribir(actual, "(");
+			escribir(actual, listaArgumentos);
+			escribir(actual, ");\n");
 		}
 	}
 	argumentos = 1;
 	numparam = 0;
-	}
+	};
 
 lista_parametros_procedimiento: expresion {
 	$$.numArgumentos = 1;
@@ -185,12 +205,17 @@ lista_parametros_procedimiento: expresion {
 	if($$.numArgumentos <= numparam){
 		if(tipoParametro($$.numArgumentos, iden) != $1.tipo){
 			printf("\nError Semantico en la linea %d: El parametro %s ha de ser de tipo %s.\n", yylineno, $1.lexema, MostrarTipo(tipoParametro($$.numArgumentos, iden)));}
+			else strcpy(listaArgumentos, $1.lexema);
+			
 		}
-		} | lista_parametros_procedimiento COMA expresion{
+		} | lista_parametros_procedimiento COMA {strcat(listaArgumentos, ", ");} expresion{
 			$$.numArgumentos = 1+$1.numArgumentos;
 			if($$.numArgumentos <= numparam){
-				if(tipoParametro($$.numArgumentos, iden) != $3.tipo){ 
+				if(tipoParametro($$.numArgumentos, iden) != $4.tipo){ 
 					printf("\nError Semantico en la linea %d: El parametro %s ha de ser de tipo %s.\n", yylineno, $1.lexema, MostrarTipo(tipoParametro($$.numArgumentos, iden)));
+				}
+				else{
+					strcat(listaArgumentos, $4.lexema);
 				}
 			}
 			argumentos++;
@@ -271,15 +296,17 @@ lista_identificador_en_switch : | COMA IDENTIFICADOR lista_identificador_en_swit
 					$$.tipo = $2.tipo;}
 				};
 
-sentencia_while : MIENTRAS expresion {
+sentencia_while : MIENTRAS{ 
 		DescriptorControl d;
 		generaEtiqueta(d.EtiquetaEntrada);
 		escribirEtiqueta(actual, d.EtiquetaEntrada);
-						if($2.tipo!=booleano){
-							printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($2.tipo));
+		escribir(actual, ";\n");
+		}expresion {
+						if($3.tipo!=booleano){
+							printf ("\nError Semantico en la linea %d: Se esperaba una sentencia de tipo boolean, no de tipo %s \n", yylineno,MostrarTipo($3.tipo));
 						}
 						else{
-							escribirWhile(actual, $2.lexema);
+							escribirWhile(actual, $3.lexema);
 						}
 					}
 				HACER sentencia FIN {finWhile(actual);};
@@ -353,7 +380,7 @@ expresion : PARIZQ expresion PARDER {
 					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 					}else{
 						$$.tipo = $1.tipo;
-						escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, TraducirTipo($1.tipo));
+						escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, TraducirTipo($1.tipo, 0));
 						copiaTo(temp, $$.lexema, 11);
 				}
 			}
@@ -377,7 +404,7 @@ expresion : PARIZQ expresion PARDER {
 					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 					}else{
 						$$.tipo = $1.tipo;
-						escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, TraducirTipo($1.tipo));
+						escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, TraducirTipo($1.tipo, 0));
 						copiaTo(temp, $$.lexema, 11);
 				}
 			}
@@ -466,7 +493,7 @@ expresion : PARIZQ expresion PARDER {
 					printf ("\nError Semantico en la linea %d: El operador %s es incompatible con tipo: %s, se esperaba entero o real. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));}
 				else{
 					$$.tipo=$2.tipo;
-					escribirExpresionUnaria(actual, $2.lexema, $1.lexema, TraducirTipo($2.tipo));
+					escribirExpresionUnaria(actual, $2.lexema, $1.lexema, TraducirTipo($2.tipo, 0));
 					copiaTo(temp, $$.lexema, 11);
 				}
 			}
@@ -482,8 +509,8 @@ lista_constantes : | COMA CONSTANTE{
 	
 	;
 
-tipo : TIPOSIMPLE {seleccionar_fOut();escribir_variables(actual, TraducirTipo($1.tipo));asignarTipoCascada($1.tipo);} 
-	| PILA TIPOSIMPLE {esPila();asignarTipoCascada($2.tipo);}
+tipo : TIPOSIMPLE {seleccionar_fOut();escribirVariables(actual, TraducirTipo($1.tipo, 0));asignarTipoCascada($1.tipo);} 
+	| PILA TIPOSIMPLE {esPila();escribirVariables(actual, TraducirTipo($2.tipo, 1));asignarTipoCascada($2.tipo);}
 	| error{asignarTipoCascada(desconocido);};
 
 %%

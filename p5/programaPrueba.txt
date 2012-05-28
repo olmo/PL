@@ -39,7 +39,7 @@ inicio
 				x1:=3.1;
 		fin;
 		
-		procC(verdad,10);
+		procC(verdad,10+(8/2));
 		asdf :=xf/10.0;
 		procC(falso,1);
 		procC(verdad,23);
