@@ -316,7 +316,7 @@ sentencia_while : MIENTRAS{
 							escribirWhile(actual, $3.lexema);
 						}
 					}
-				HACER sentencia FIN {finWhile(actual);};
+				HACER sentencia {finWhile(actual);};
 
 sentencia_entrada : LEER lista_variables_entrada PUNTOCOMA;
 
