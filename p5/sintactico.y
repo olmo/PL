@@ -279,7 +279,8 @@ lista_sentencia_switch : | lista_variables_switch{
 						} 
 						DOSPUNTOS sentencia lista_sentencia_switch; 
 
-lista_variables_switch: lista_variables_en_switch {$$.tipo = $1.tipo;} | CONSTANTE {$$.tipo = $1.tipo;} lista_constantes{
+lista_variables_switch: lista_variables_en_switch {$$.tipo = $1.tipo;} | CONSTANTE {$$.tipo = $1.tipo;initListaConstantes();addConstante($1.lexema);} 
+					lista_constantes{
 						if($2.tipo != $1.tipo){
 							printf("\nError Semantico en la linea %d: Se esperaba una constante del mismo tipo que %s\n", yylineno, $1.lexema);
 						}
