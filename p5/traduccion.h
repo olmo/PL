@@ -319,7 +319,7 @@ void finWhile(FILE* fich){
 }
 
 void escribirEtiqueta(FILE* fich, char* etiqueta){
-	fprintf(fich, "%s :\n", etiqueta);
+	fprintf(fich, "%s :\n;\n", etiqueta);
 }
 
 /** Hay que hacer las funciones para escribir el case**/
