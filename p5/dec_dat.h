@@ -18,7 +18,8 @@ void init(PilaFloat* p){
 }
 
 float tope(PilaFloat* p){
-	return p->pila[p->numElems];
+	assert(p->numElems >= 0);
+	return p->pila[p->numElems-1];
 }
 
 PilaFloat* push(PilaFloat* p, float el){
@@ -26,11 +27,12 @@ PilaFloat* push(PilaFloat* p, float el){
 		p->pila = (float*)realloc(p->pila, (p->max+100)*sizeof(float));
 		p->max+=100;
 	}
-	p->pila[++p->numElems] = el;
+	p->pila[p->numElems++] = el;
 	return p;
 }
 
 PilaFloat* pop(PilaFloat* p){
+	assert(p->numElems > 0);
 	p->numElems--;
 	return p;
 }
@@ -113,6 +115,14 @@ PilaFloat* divPilaPilaF(PilaFloat* p1, PilaFloat* p2){
 		p1->pila[i] /= p2->pila[i];
 		
 	return p1;
+}
+
+void printPilaF(PilaFloat* pila){
+	int i;
+	for(i=pila->numElems-1; i>=0; i--)
+		if(i==0)
+			printf("%f", pila->pila[i]);
+		else printf("%f, ", pila->pila[i]);
 }
 
 
