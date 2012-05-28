@@ -1,7 +1,7 @@
 programa
 inicio
 inivar
-	n, curr: entero;
+	n, curr: entero := 2;
 finvar
 
 escribir "Introduce un numero: ";
