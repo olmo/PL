@@ -43,8 +43,8 @@ otros    		.
 
 "Y"						{ yylval.lexema=strdup(yytext); return OP_AND;}
 "O"						{ yylval.lexema=strdup(yytext); return OP_OR;}
-"="        				{ yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_IGUALDAD;}
-"<>"					{ yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_IGUALDAD;}
+"="        				{ yylval.atrib=0; yylval.lexema=strdup("=="); return OP_IGUALDAD;}
+"<>"					{ yylval.atrib=1; yylval.lexema=strdup("!="); return OP_IGUALDAD;}
 "<"						{ yylval.atrib=0; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
 ">"						{ yylval.atrib=1; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
 "<="					{ yylval.atrib=2; yylval.lexema=strdup(yytext); return OP_RELACIONAL;}
