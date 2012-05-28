@@ -107,7 +107,7 @@ void seleccionar_fProc(){
 }
 
 void escribir_cabecera(){//hay que añadir los includes
-	fprintf(fichOut,"#include \"dec_fun\"\n#include \"Stack.h\"\n#include <stdio.h>\n\nint main()");
+	fprintf(fichOut,"#include \"dec_fun.h\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\nint main()");
 
 }
 
