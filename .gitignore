@@ -3,3 +3,4 @@
 lex.yy.c
 y.tab.c
 *.exe
+p5/prueba

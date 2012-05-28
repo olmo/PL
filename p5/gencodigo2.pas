@@ -23,43 +23,43 @@ inicio
 		finvar
 		
 		si d*curr = n entonces
+		inicio
+			si curr <> ultim entonces
 			inicio
-				si curr <> ultim entonces
-					inicio
-						ultim := curr;
-						cuenta := 1;
-					fin
-				sino
-					cuenta := cuenta +1;
-				
-				n := n/curr;
+				ultim := curr;
+				cuenta := 1;
 			fin
+			sino
+				cuenta := cuenta +1;
+			
+			n := n/curr;
+		fin
 		sino
+		inicio
+			si cuenta > 0 entonces
 			inicio
-				si cuenta > 0 entonces
-					inicio
-						si primero = 0 entonces
-							escribir " *";
-						primero := 0;
-						escribir " ",curr;
-						si cuenta > 1 entonces
-							escribir "^",cuenta;
-					fin
-				
-				curr := curr+1;
-				cuenta := 0;
+				si primero = 0 entonces
+					escribir " *";
+				primero := 0;
+				escribir " ",curr;
+				si cuenta > 1 entonces
+					escribir "^",cuenta;
 			fin
+			
+			curr := curr+1;
+			cuenta := 0;
+		fin
 	fin
 	
 	si cuenta > 0 entonces
-		inicio
-			si primero = 0 entonces
-				escribir " *";
-			primero := 0;
-			escribir " ",curr;
-			si cuenta > 1 entonces
-				escribir "^",cuenta;
-		fin
+	inicio
+		si primero = 0 entonces
+			escribir " *";
+		primero := 0;
+		escribir " ",curr;
+		si cuenta > 1 entonces
+			escribir "^",cuenta;
+	fin
 
 	escribir "\n";
 fin.
