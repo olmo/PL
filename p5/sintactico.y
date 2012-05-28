@@ -315,7 +315,12 @@ sentencia_entrada : LEER lista_variables_entrada PUNTOCOMA;
 
 lista_variables_entrada: IDENTIFICADOR lista_identificador_entrada {
 		if(existe($1.lexema)==0){
-			printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $1.lexema);} 
+			printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $1.lexema);
+		}
+		else{
+			$1.tipo=get_tipo ($1.lexema);
+			escribe_cin(actual, $1.tipo, $1.lexema);
+		}
 		}
 				| error;
 				
@@ -328,7 +333,7 @@ sentencia_salida : ESCRIBIR lista_expresiones_o_cadena PUNTOCOMA;
 
 lista_expresiones_o_cadena : expresion_cad | expresion_cad COMA lista_expresiones_o_cadena ;
 
-expresion_cad : expresion | CADENA;
+expresion_cad : expresion {escribe_cout(actual, $1.tipo, $1.lexema);}| CADENA {escribe_cout(actual, $1.tipo, $1.lexema);};
 
 expresion : PARIZQ expresion PARDER {
 				$$.tipo=$2.tipo;

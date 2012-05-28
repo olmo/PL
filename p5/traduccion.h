@@ -407,7 +407,7 @@ void escribirProc(char *iden){
 
 
 
-void escribe_cout(FILE* fich, dtipo tip, char *elem, int dim, int d1, int d2){
+void escribe_cout(FILE* fich, dtipo tip, char *elem){
 	if((tip==0)||(tip==3)){
 		fprintf(fich,"printf(\"%%d\",%s);\n",elem);
 	}
@@ -418,13 +418,13 @@ void escribe_cout(FILE* fich, dtipo tip, char *elem, int dim, int d1, int d2){
 		fprintf(fich,"printf(\"%%c\",%s);\n",elem);
 	}
 	if((tip==4)||(tip==5)){
-		fprintf(fich,"imprime_pila_int(%d, %s);\n",d1,elem);
+		fprintf(fich,"imprime_pila_int(%d, %s);\n",elem);
 	}
 	if(tip==6){
-		fprintf(fich,"imprime_pila_float(%d, %s);\n",d1,elem);
+		fprintf(fich,"imprime_pila_float(%d, %s);\n",elem);
 	}
 	if(tip==7){
-		fprintf(fich,"imprime_pila_char(%d, %s);\n",d1,elem);
+		fprintf(fich,"imprime_pila_char(%d, %s);\n",elem);
 	}
 	if(tip==8){
 		fprintf(fich,"printf(\%s);\n",elem);
