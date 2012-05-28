@@ -46,7 +46,7 @@ inicio
 		
 		mientras x2*xf < 10.0 hacer
 			x2 :=x2*xf;
-		fin
+		
 	fin;
 	
 	procedimiento procD(d1: real)

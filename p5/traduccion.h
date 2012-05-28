@@ -17,6 +17,8 @@ unsigned int temporal_base =0;
 unsigned int almacena_temp=0;
 int main_llave=0;
 int en_fun=0;
+char** listaConstantes;
+int utilConstantes;
 
 typedef struct{
 char EtiquetaEntrada[15];
@@ -55,7 +57,15 @@ int get_temp(){
 
 }
 
+void initListaConstantes(){
+	listaConstantes = (char**)malloc(100*sizeof(char*));
+	utilConstantes = 0;
+}
 
+void addConstante(char* c){
+	listaConstantes[utilConstantes] = (char*)malloc((strlen(c)+1)*sizeof(char));
+	strcpy(listaConstantes[utilConstantes++], c);
+}	
 
 void anadirDescriptor(DescriptorControl d){
 	indice++;
@@ -107,14 +117,20 @@ void seleccionar_fProc(){
 }
 
 void escribir_cabecera(){//hay que añadir los includes
-	fprintf(fichOut,"#include \"dec_fun\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\nint main()");
+	fprintf(fichOut,"#include \"dec_fun\"\n#include \"Stack.h\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\nint main()");
 
 }
 
 void cerrar_main(){
 	fprintf(fichOut,"return 0;\n");
 }
-
+char* TraducirValor(char* valor){
+	if(!strcmp(valor, "verdad"))
+		return "1";
+	else if(!strcmp(valor, "falso"))
+		return "0";
+	else return valor;
+}
 char* TraducirTipo(dtipo tipo, int isPila){
 	char* tipoChar = (char*)malloc(15*sizeof(char));
 	if(isPila){
@@ -147,20 +163,18 @@ void escribir_llaveA(FILE* fich){
 	
 }
 
-void escribir_llaveC(){
-	main_llave--;
-	if(en_fun==0){
-		if(main_llave==0)
-			fprintf(fichOut,"return 0;\n}\n");
-		else
-			fprintf(fichOut,"}\n");
-	}
-	else
-		fprintf(fichProc,"}\n");
+void escribir_llaveC(FILE* fich){
+	fprintf(fich,"}\n");
 }
 
 void escribir_1var(FILE* fich, char *nombre){
+	
 	fprintf(fich,"%s %s;\n",tipo_actual,nombre);
+	
+	if(!strcmp(tipo_actual, "Stack"))
+		fprintf(fich, "stack_init(&%s);\n", nombre);
+	else if(!strcmp(tipo_actual, "PilaFloat"))
+		fprintf(fich, "init(&%s);\n", nombre);
 }
 
 
@@ -290,6 +304,34 @@ void escribirElse(FILE* fich){
 	fprintf(fich,"%s:\n;\n",d.EtiquetaElse);
 }
 
+escribirExpresionUnariaPila(FILE* fich, char *pila, char*operacion, dtipo tipo){
+	copiaToTemp1(pila);
+	genera_temporal();
+	
+	if(!strcmp(operacion, "pop")){
+		fprintf(fich,"%s %s;\n",TraducirTipo(tipoEnPila(tipo), 0),temp);
+		if(tipo == real || tipo == pila_real)
+			fprintf(fich,"%s = *pop(&%s);\n",temp,temp1);
+		else if (tipo == caracter || tipo == pila_caracter)
+			fprintf(fich,"%s = *stack_pop(&%s, 0);\n",temp,temp1);
+		else fprintf(fich,"%s = *stack_pop(&%s, 0);\n",temp,temp1);
+	}else if(!strcmp(operacion, "top")){
+		fprintf(fich,"%s %s;\n",TraducirTipo(tipoPila(tipo), 0),temp);
+		if(tipo == real || tipo == pila_real)
+			fprintf(fich,"%s = tope(&%s);\n",temp,temp1);
+		else if (tipo == caracter || tipo == pila_caracter)
+			fprintf(fich,"%s = (char)stack_top(&%s);\n",temp,temp1);
+		else fprintf(fich,"%s = (int)stack_top(&%s);\n",temp,temp1);
+	}else if(!strcmp(operacion, "empty")){
+		fprintf(fich,"%s %s;\n",TraducirTipo(entero, 0),temp);
+		if(tipo == real || tipo == pila_real)
+			fprintf(fich,"%s = vacia(&%s);\n",temp,temp1);
+		else if (tipo == caracter || tipo == pila_caracter)
+			fprintf(fich,"%s = stack_empty(&%s);\n",temp,temp1);
+		else fprintf(fich,"%s = stack_empty(&%s);\n",temp,temp1);
+	}
+}
+
 escribirExpresionUnaria(FILE* fich, char *elem1,char*op,char *tip){
 	copiaToTemp1(elem1);
 	genera_temporal();
@@ -368,8 +410,21 @@ void fin_for(){
 void escribirInicializacion(FILE* fich, int num, char* valor){
 	
 	int i;
-	for(i=0; i<num; i++){
-		fprintf(fich, "%s = %s;\n", TS[TOPE-i].nombre, valor);
+	
+	if(TS[TOPE].pila){
+		for(i=0; i<num; i++){
+			int j;
+			for(j=utilConstantes-1; j>=0; j--){
+				if(TS[TOPE-i].tipoDato == real || TS[TOPE-i].tipoDato ==pila_real)
+					fprintf(actual, "push(&%s, %s);\n", TS[TOPE-i].nombre, listaConstantes[j]);
+				else fprintf(actual, "stack_push(&%s, (void*)%s);\n", TS[TOPE-i].nombre, listaConstantes[j]);
+				
+			}
+		}
+	}else{
+		for(i=0; i<num; i++){
+			fprintf(fich, "%s = %s;\n", TS[TOPE-i].nombre, valor);
+		}
 	}
 
 }
@@ -417,14 +472,14 @@ void escribe_cout(FILE* fich, dtipo tip, char *elem){
 	if(tip==2){
 		fprintf(fich,"printf(\"%%c\",%s);\n",elem);
 	}
-	if((tip==4)||(tip==5)){
-		fprintf(fich,"imprime_pila_int(%d, %s);\n",elem);
+	if((tip==4)||(tip==6)){
+		fprintf(fich,"printPila(&%s, ENTERO);\n",elem);
 	}
-	if(tip==6){
-		fprintf(fich,"imprime_pila_float(%d, %s);\n",elem);
+	if(tip==5){
+		fprintf(fich,"printPilaF(&%s);\n",elem);
 	}
 	if(tip==7){
-		fprintf(fich,"imprime_pila_char(%d, %s);\n",elem);
+		fprintf(fich,"printPila(&%s, CHAR);\n",elem);
 	}
 	if(tip==8){
 		fprintf(fich,"printf(\%s);\n",elem);

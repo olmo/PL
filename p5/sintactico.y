@@ -101,13 +101,13 @@ int pilaError = 0;
 **/
 
 
-programa : PROGRAMA{abrir_ficheros(); escribir_cabecera();} bloque PUNTO;
+programa : PROGRAMA{abrir_ficheros(); escribir_cabecera();escribir_llaveA(actual);} bloque PUNTO{escribir(actual, "\nreturn 0;\n");escribir_llaveC(actual);};
 
-bloque : INICIO {IntroIniBloq(); seleccionar_fOut(); escribir_llaveA(actual);} 
+bloque : INICIO {IntroIniBloq(); seleccionar_fOut(); } 
 	declar_de_variables_locales 
 	declar_de_subprogs 
 	sentencias 
-	FIN {IntroFinBloq();seleccionar_fOut(); escribir_llaveC(actual)};
+	FIN {IntroFinBloq();seleccionar_fOut();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
@@ -121,7 +121,7 @@ cuerpo_declar_variables : asdf PUNTOCOMA | error;
 
 asdf : lista_variables  DOSPUNTOS tipo opcion_asign_variable {numVarDeclaradas=0;} | error {numVarDeclaradas=0;};
 
-opcion_asign_variable : ASIGNACION expresion {printf("%d %s\n", numVarDeclaradas, $2.lexema);escribirInicializacion(actual, numVarDeclaradas, $2.lexema);} | ;
+opcion_asign_variable : ASIGNACION expresion {escribirInicializacion(actual, numVarDeclaradas, $2.lexema);} | ;
 
 lista_variables : IDENTIFICADOR lista_identificador {if(es_repetida($1.lexema)==0){
 														InsertarElemento(variable, $1.lexema);} 
@@ -146,12 +146,14 @@ cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ {
 
 variables_subprograma : {numVarDeclaradas = 0;}| lista_parametros DOSPUNTOS tipo {
 			escribirListaParametros(actual, TraducirTipo($3.tipo, 0), numVarDeclaradas); 
+			escribir(actual, ", ");
 			numVarDeclaradas = 0;
 			} lista_variables_subprograma | error;
 
 													
-lista_variables_subprograma : | PUNTOCOMA lista_parametros DOSPUNTOS tipo{
+lista_variables_subprograma : {fseek(actual, -2, SEEK_CUR);}| PUNTOCOMA lista_parametros DOSPUNTOS tipo{
 			escribirListaParametros(actual, TraducirTipo($4.tipo, 0), numVarDeclaradas); 
+			escribir(actual, ", ");
 			numVarDeclaradas = 0;
 			} 		
 			lista_variables_subprograma | error;
@@ -361,38 +363,81 @@ expresion : PARIZQ expresion PARDER {
 					if(es_pila($2.tipo) ==0 ){
 						printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba pila. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));
 					}else{
-						if($1.atrib == 1)
+						if($1.atrib == 1){
 							$$.tipo = $2.tipo;
-						else if($1.atrib == 2)
+							escribirExpresionUnariaPila(actual, $2.lexema, "pop", tipoPila($2.tipo));
+							copiaTo(temp, $2.lexema, 11);
+						}else if($1.atrib == 2){
 							$$.tipo = tipoPila($2.tipo);
-						else if($1.atrib == 3)
+							escribirExpresionUnariaPila(actual, $2.lexema, "top", $2.tipo);
+							copiaTo(temp, $2.lexema, 11);
+						}else if($1.atrib == 3){
 							$$.tipo = booleano;
-						
+							escribirExpresionUnariaPila(actual, $2.lexema, "empty", $2.tipo);
+							copiaTo(temp, $2.lexema, 11);
+						}
 						//seleccionar_fOut();
 						//escribirExpresionUnaria(actual, $2.lexema, $1.lexema, MostrarTipo($2.tipo));
 					}
 				}
+				$$.lexema = $2.lexema;
 			}
 		
 		| expresion OP_MULDIV expresion {
 				if(($1.tipo==booleano || $3.tipo==booleano) || ($1.tipo == cadena || $1.tipo == cadena)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando con un booleano o cadena. \n", yylineno, $2.lexema);
 					correcto = 0;
-				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1){
+					if($1.tipo != $3.tipo){
 						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo)==0 && tipoPila($1.tipo) != $3.tipo){
+					}else{
+						if($1.tipo == real || $1.tipo == pila_real){
+							if(!strcmp($2.lexema, "*"))
+								fprintf(actual, "\nmulPilaPilaF(&%s, %s);\n", $1.lexema, $3.lexema);
+							else fprintf(actual, "\ndivPilaPilaF(&%s, %s);\n", $1.lexema, $3.lexema);
+						}else{
+							if(!strcmp($2.lexema, "*"))
+								fprintf(actual, "\nmulPilaPila(&%s, %s);\n", $1.lexema, $3.lexema);
+							else fprintf(actual, "\ndivPilaPila(&%s, %s);\n", $1.lexema, $3.lexema);
+						}
+					}
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo)==0){
+					if(tipoPila($1.tipo) != $3.tipo){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles . \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
-					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+					}else{
+						if($1.tipo == real || $1.tipo == pila_real){
+							if(!strcmp($2.lexema, "*"))
+								fprintf(actual, "\nmulPilaValorF(&%s, %s);\n", $1.lexema, $3.lexema);
+							else fprintf(actual, "\ndivPilaValorF(&%s, %s);\n", $1.lexema, TraducirValor($3.lexema));
+						}else{
+							if(!strcmp($2.lexema, "*"))
+								fprintf(actual, "\nmulPilaValor(&%s, (void*)%s);\n", $1.lexema, $3.lexema);
+							else fprintf(actual, "\ndivPilaValor(&%s, (void*)%s);\n", $1.lexema, TraducirValor($3.lexema));
+						}
+					}
+				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1){
+					if($1.tipo != tipoPila($3.tipo)){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles . \n", yylineno, $2.lexema);
 						correcto = 0;
+					}else{
+						if($1.tipo == real || $1.tipo == pila_real){
+							if(!strcmp($2.lexema, "*"))
+								fprintf(actual, "\nmulValorPilaF((void*)%s, &%s);\n", $1.lexema, $3.lexema);
+							else printf("\nError Semantico en la linea %d: Operacion no soportada\n", yylineno);
+						}else{
+							if(!strcmp($2.lexema, "*"))
+								fprintf(actual, "\nmulValorPila((void*)%s, &%s);\n", TraducirValor($1.lexema), $3.lexema);
+							else printf("\nError Semantico en la linea %d: Operacion no soportada\n", yylineno);
+						}
+					}
 				}else if(es_pila($1.tipo)==0 && es_pila($3.tipo)==0){
 					if($1.tipo!=$3.tipo){
 					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 					}else{
 						$$.tipo = $1.tipo;
-						escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, TraducirTipo($1.tipo, 0));
+						escribirExpresionBinaria(actual, TraducirValor($1.lexema), TraducirValor($3.lexema), $2.lexema, TraducirTipo($1.tipo, 0));
 						copiaTo(temp, $$.lexema, 11);
 				}
 			}
@@ -402,21 +447,57 @@ expresion : PARIZQ expresion PARDER {
 			if(($1.tipo==booleano || $3.tipo==booleano) || ($1.tipo == cadena || $1.tipo == cadena)){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando con un booleano o cadena. \n", yylineno, $2.lexema);
 					correcto = 0;
-				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1 &&  $1.tipo != $3.tipo){
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo) ==1){
+					if($1.tipo != $3.tipo){
 						printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos de pila incompatibles. \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo)==0 && tipoPila($1.tipo) != $3.tipo){
+					}else{
+						if($1.tipo == real || $1.tipo == pila_real){
+							if(!strcmp($2.lexema, "+"))
+								fprintf(actual, "\nsumPilaPilaF(&%s, %s);\n", $1.lexema, $3.lexema);
+							else fprintf(actual, "\nrestaPilaPilaF(&%s, %s);\n", $1.lexema, $3.lexema);
+						}else{
+							if(!strcmp($2.lexema, "+"))
+								fprintf(actual, "\nsumPilaPila(&%s, %s);\n", $1.lexema, $3.lexema);
+							else fprintf(actual, "\nrestaPilaPila(&%s, %s);\n", $1.lexema, $3.lexema);
+						}
+					}
+				}else if(es_pila($1.tipo) ==1 && es_pila($3.tipo)==0){
+					if(tipoPila($1.tipo) != $3.tipo){
 					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles . \n", yylineno, $2.lexema);
 						correcto = 0;
-				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1 && $1.tipo != tipoPila($3.tipo)){
-					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles. \n", yylineno, $2.lexema);
+					}else{
+						if($1.tipo == real || $1.tipo == pila_real){
+							if(!strcmp($2.lexema, "+"))
+								fprintf(actual, "\nsumPilaValorF(&%s, %s);\n", $1.lexema, TraducirValor($3.lexema));
+							else fprintf(actual, "\nrestaPilaValorF(&%s, %s);\n", $1.lexema, TraducirValor($3.lexema));
+						}else{
+							if(!strcmp($2.lexema, "+"))
+								fprintf(actual, "\nsumPilaValor(&%s, (void*)%s);\n", $1.lexema, TraducirValor($3.lexema));
+							else fprintf(actual, "\nrestaPilaValor(&%s, (void*)%s);\n", $1.lexema, TraducirValor($3.lexema));
+						}
+					}
+				}else if(es_pila($1.tipo) == 0 && es_pila($3.tipo) ==1){
+					if($1.tipo != tipoPila($3.tipo)){
+					printf("\nError Semantico en la linea %d: El operador %s se esta utilizando entre tipos incompatibles . \n", yylineno, $2.lexema);
 						correcto = 0;
+					}else{
+						if($1.tipo == real || $1.tipo == pila_real){
+							if(!strcmp($2.lexema, "+"))
+								fprintf(actual, "\nsumValorPilaF((void*)%s, &%s);\n", TraducirValor($1.lexema), $3.lexema);
+							else printf("\nError Semantico en la linea %d: Operacion no soportada\n", yylineno);
+						}else{
+							if(!strcmp($2.lexema, "+"))
+								fprintf(actual, "\nsumValorPila((void*)%s, &%s);\n",TraducirValor($1.lexema), $3.lexema);
+							else printf("\nError Semantico en la linea %d: Operacion no soportada\n", yylineno);
+						}
+					}
 				}else if(es_pila($1.tipo)==0 && es_pila($3.tipo)==0){
 					if($1.tipo!=$3.tipo){
 					printf("\nError Semantico en la linea %d: Tipo %s incompatible con tipo %s. \n", yylineno, MostrarTipo($1.tipo), MostrarTipo($3.tipo));
 					}else{
 						$$.tipo = $1.tipo;
-						escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, TraducirTipo($1.tipo, 0));
+						escribirExpresionBinaria(actual, TraducirValor($1.lexema), TraducirValor($3.lexema), $2.lexema, TraducirTipo($1.tipo, 0));
 						copiaTo(temp, $$.lexema, 11);
 				}
 			}
@@ -433,7 +514,7 @@ expresion : PARIZQ expresion PARDER {
 					correcto = 0;
 				}else{
 					$$.tipo = booleano;
-					escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, "int");
+					escribirExpresionBinaria(actual, TraducirValor($1.lexema), TraducirValor($3.lexema), $2.lexema, "int");
 					copiaTo(temp, $$.lexema, 11);
 			}
 		
@@ -446,9 +527,13 @@ expresion : PARIZQ expresion PARDER {
 			  }else if(tipoPila($1.tipo) != $3.tipo){
 			  	printf("\nError Semantico en la linea %d: El tipo de la pila es incompatible con el tipo de %s\n", yylineno, $3.lexema);
 			  	correcto = 0;
-			  }else $$.tipo = $1.tipo;
-			  
-			}
+			  }else {
+			  	$$.tipo = $1.tipo;
+			  	if($3.tipo == real)
+			  		fprintf(actual, "\npush(&%s, %s);\n", $1.lexema, $3.lexema);
+			  	else fprintf(actual, "\nstack_push(&%s, (void*)%s);\n", $1.lexema, TraducirValor($3.lexema));
+			  }
+		}
 		| expresion OP_OR expresion 
 			{if(($1.tipo!=booleano)||($3.tipo!=booleano)){
 				printf("\nError Semantico en la linea %d: El operador %s se ha de utilizar con tipos booleanos . \n", yylineno, $2.lexema);
@@ -456,7 +541,7 @@ expresion : PARIZQ expresion PARDER {
 			}
 			if(correcto==1){
 				$$.tipo=booleano;
-				escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, "int");	
+				escribirExpresionBinaria(actual, TraducirValor($1.lexema), TraducirValor($3.lexema), $2.lexema, "int");
 				copiaTo(temp, $$.lexema, 11);
 			}else
 				correcto=1;
@@ -468,7 +553,7 @@ expresion : PARIZQ expresion PARDER {
 			}
 			if(correcto==1){
 				$$.tipo=booleano;
-				escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, "int");	
+				escribirExpresionBinaria(actual, TraducirValor($1.lexema), TraducirValor($3.lexema), $2.lexema, "int");
 				copiaTo(temp, $$.lexema, 11);
 			}else
 				correcto=1;
@@ -485,7 +570,7 @@ expresion : PARIZQ expresion PARDER {
 					correcto = 0;
 				}else{
 					$$.tipo = booleano;
-					escribirExpresionBinaria(actual, $1.lexema, $3.lexema, $2.lexema, "int");
+					escribirExpresionBinaria(actual, TraducirValor($1.lexema), TraducirValor($3.lexema), $2.lexema, "int");
 					copiaTo(temp, $$.lexema, 11);
 				}
 			}
@@ -512,11 +597,18 @@ expresion : PARIZQ expresion PARDER {
 		
 		| error;
 
-agregado : LLAVEIZQ CONSTANTE {tipo_pila = $2.tipo;} lista_constantes LLAVEDER {$$.tipo = tipo_pila;};
+agregado : LLAVEIZQ CONSTANTE {
+		tipo_pila = $2.tipo; 
+		initListaConstantes();
+		addConstante($2.lexema);
+		} lista_constantes LLAVEDER {$$.tipo = tipo_pila;};
 
-lista_constantes : | COMA CONSTANTE{ 
+lista_constantes : {fseek(actual, -2, SEEK_CUR);} | COMA CONSTANTE{ 
 	if($2.tipo != tipo_pila)
 		printf("Error Semantico en la linea %d: La constante %s tiene un tipo diferente al resto de constantes\n", yylineno, $2.lexema);
+	else {
+		addConstante($2.lexema);
+	}
 	}lista_constantes
 	
 	;
