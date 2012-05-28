@@ -20,7 +20,9 @@
 #ifndef _RZ_C_STACK_
 #define _RZ_C_STACK_
 
-#include "dec_dat.h"
+#define ENTERO 1
+#define CHAR 2
+#define BOOLEAN 3
 
 typedef struct _StackNode {
     void *data;
@@ -63,5 +65,13 @@ typedef struct _Stack {
 
 
 int stack_empty(Stack *s);
+
+void* mulPilaValor(Stack* pila, void* valor);
+
+void* mulValorPila(void* valor, Stack* pila);
+
+void* mulPilaPila(Stack* p1, Stack* p2);
+
+
 
 #endif /* _RZ_C_STACK_ */
