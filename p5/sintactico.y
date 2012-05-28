@@ -265,8 +265,7 @@ sentencia_switch : CASO IDENTIFICADOR {
 			escribe_case(actual,$2.lexema);
 		}
 	}DE lista_variables_switch{
-		if( $4.tipo != $2.tipo ){
-		printf("%d",$4.tipo);
+		if( $5.tipo != $2.tipo ){
 			printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible con el tipo de %s\n", yylineno, $2.lexema);
 		}
 	}DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN;
