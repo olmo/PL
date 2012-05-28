@@ -1,0 +1,19 @@
+programa
+inicio
+	inivar
+		n: entero;
+	finvar
+
+	escribir "Introduce un numero: ";
+	leer n;
+
+	caso n de
+		1: escribir "uno";
+		2: escribir "dos";
+		3,4,5: escribir "wasa";
+		sino escribir "otra cosa";
+	fin
+
+	escribir "\n";
+
+fin.

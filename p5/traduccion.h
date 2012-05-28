@@ -209,8 +209,6 @@ int i=0;
 
 void copiaToTemp(char *m){
 	copiaTo(m, temp, 11);
-
-
 }
 void genera_temporal(){
 	char aux[11]= "temp";
@@ -252,21 +250,14 @@ escribirExpresionBinaria(FILE* fich, char *elem1, char*elem2, char*op, char*tip)
 	fprintf(fich,"%s %s;\n",tip,temp);
 	fprintf(fich,"%s = %s %s ",temp, temp1, op);	
 	fprintf(fich,"%s;\n",temp2);
-		
-	
 }
 
 void escribirAsignacion(FILE* fich, char *elem1, char*elem2){
 	copiaToTemp1(elem1);
 	copiaToTemp2(elem2);
 	
-
 	fprintf(fich,"%s = ",temp1);
-
 	fprintf(fich,"%s;\n\n",elem2);
-
-
-
 }
 
 void escribirIf(FILE* fich, char *elem1){
@@ -277,10 +268,7 @@ void escribirIf(FILE* fich, char *elem1){
 	anadirDescriptor(d);
 	copiaToTemp1(elem1);
 	
-
-	fprintf(fich,"if(!%s)goto %s;\n\n",temp1,d.EtiquetaElse);
-
-	
+	fprintf(fich,"if(!%s)goto %s;\n\n",temp1,d.EtiquetaElse);	
 }
 
 void escribirElse(FILE* fich){
@@ -288,6 +276,20 @@ void escribirElse(FILE* fich){
 
 	fprintf(fich,"goto %s;\n\n",d.EtiquetaSalida);
 	fprintf(fich,"%s:\n;\n",d.EtiquetaElse);
+}
+
+void escribe_case(FILE *fich, char *elem){
+	DescriptorControl d;
+	
+	//generaEtiqueta(d.EtiquetaSalida);
+	
+	int h=strlen(elem);
+	copiaTo(elem,d.NombreVarControl, h);
+	
+	anadirDescriptor(d);
+	genera_temporal();
+	copiaToTemp1(elem);
+	
 }
 
 escribirExpresionUnaria(FILE* fich, char *elem1,char*op,char *tip){
@@ -321,49 +323,6 @@ void finWhile(FILE* fich){
 void escribirEtiqueta(FILE* fich, char* etiqueta){
 	fprintf(fich, "%s :\n;\n", etiqueta);
 }
-
-/** Hay que hacer las funciones para escribir el case**/
-void escribe_case(char *elem1, char *elem2, char* ident){
-	
-	DescriptorControl d;
-	generaEtiqueta(d.EtiquetaEntrada);
-	generaEtiqueta(d.EtiquetaSalida);
-	int h=strlen(ident);
-	copiaTo(ident,d.NombreVarControl, h);
-	anadirDescriptor(d);
-	genera_temporal();
-	copiaToTemp1(elem1);
-	copiaToTemp2(elem2);
-	if(en_fun==0){
-		fprintf(fichOut,"%s = %s;\n",d.NombreVarControl,elem1);
-		fprintf(fichOut,"%s %s;\n","int",temp);
-		fprintf(fichOut,"%s:\n;\n%s= %s<=%s;\n",d.EtiquetaEntrada,temp,d.NombreVarControl,elem2);
-		fprintf(fichOut,"if(!%s)goto %s;\n\n",temp,d.EtiquetaSalida);
-	}
-	else{
-		fprintf(fichProc,"%s = %s;\n",d.NombreVarControl,elem1);
-		fprintf(fichProc,"%s %s;\n","int",temp);
-		fprintf(fichProc,"%s:\n;\n%s= %s<=%s;\n",d.EtiquetaEntrada,temp,d.NombreVarControl,elem2);
-		fprintf(fichProc,"if(!%s)goto %s;\n\n",temp,d.EtiquetaSalida);
-	}
-}
-
-void fin_for(){
-	
-	DescriptorControl d=get_descriptor();
-	if(en_fun==0){
-		fprintf(fichOut,"%s = %s + 1;\n", d.NombreVarControl,d.NombreVarControl); 
-		fprintf(fichOut,"goto %s;\n",d.EtiquetaEntrada);
-		fprintf(fichOut,"%s:\n;\n",d.EtiquetaSalida);
-	}
-	else{
-		fprintf(fichProc,"%s = %s + 1;\n", d.NombreVarControl,d.NombreVarControl); 
-		fprintf(fichProc,"goto %s;\n",d.EtiquetaEntrada);
-		fprintf(fichProc,"%s:\n;\n",d.EtiquetaSalida);
-	}
-	borrarDescriptor();
-}
-/******************************************************************/
 
 void escribirInicializacion(FILE* fich, int num, char* valor){
 	
