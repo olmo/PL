@@ -7,6 +7,7 @@ finvar
 escribir "Introduce un numero: ";
 leer n;
 escribir " ",n," == ";
+curr := 2;
 
 mientras curr <= n hacer
 inicio
@@ -21,7 +22,6 @@ inicio
 		fin
 	sino
 		curr := curr+1;
-	fin
 fin
 
 escribir "\n";
