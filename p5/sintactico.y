@@ -171,7 +171,14 @@ lista_identificador_parametros : | COMA IDENTIFICADOR lista_identificador_parame
 
 sentencias : | sentencias sentencia;
 
-sentencia : bloque | asignacion_procedimiento | sentencia_if | sentencia_switch | sentencia_while | sentencia_entrada | sentencia_salida | error;
+sentencia : bloque 
+| {escribir_llaveA(actual);}asignacion_procedimiento{escribir_llaveC(actual);} 
+| {escribir_llaveA(actual);}sentencia_if{escribir_llaveC(actual);} 
+| {escribir_llaveA(actual);}sentencia_switch {escribir_llaveC(actual);}
+| {escribir_llaveA(actual);}sentencia_while {escribir_llaveC(actual);}
+| {escribir_llaveA(actual);}sentencia_entrada {escribir_llaveC(actual);}
+| {escribir_llaveA(actual);}sentencia_salida {escribir_llaveC(actual);}
+| error;
 
 asignacion_procedimiento: IDENTIFICADOR {iden = $1.lexema;} procedimientoOasignacion ;
 

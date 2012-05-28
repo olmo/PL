@@ -107,7 +107,7 @@ void seleccionar_fProc(){
 }
 
 void escribir_cabecera(){//hay que añadir los includes
-	fprintf(fichOut,"#include \"dec_fun.h\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\nint main()");
+	fprintf(fichOut,"#include \"dec_fun\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\nint main()");
 
 }
 
@@ -287,7 +287,7 @@ void escribirElse(FILE* fich){
 	DescriptorControl d=get_descriptor();
 
 	fprintf(fich,"goto %s;\n\n",d.EtiquetaSalida);
-	fprintf(fich,"%s:\n\n",d.EtiquetaElse);
+	fprintf(fich,"%s:\n;\n",d.EtiquetaElse);
 }
 
 escribirExpresionUnaria(FILE* fich, char *elem1,char*op,char *tip){
@@ -313,7 +313,7 @@ void finWhile(FILE* fich){
 	DescriptorControl d=get_descriptor();
 
 	fprintf(fich,"goto %s;\n",d.EtiquetaEntrada);
-	fprintf(fich,"%s:\n\n",d.EtiquetaSalida);
+	fprintf(fich,"%s:\n;\n",d.EtiquetaSalida);
 	
 	borrarDescriptor();
 }
@@ -337,13 +337,13 @@ void escribe_case(char *elem1, char *elem2, char* ident){
 	if(en_fun==0){
 		fprintf(fichOut,"%s = %s;\n",d.NombreVarControl,elem1);
 		fprintf(fichOut,"%s %s;\n","int",temp);
-		fprintf(fichOut,"%s:\n%s= %s<=%s;\n",d.EtiquetaEntrada,temp,d.NombreVarControl,elem2);
+		fprintf(fichOut,"%s:\n;\n%s= %s<=%s;\n",d.EtiquetaEntrada,temp,d.NombreVarControl,elem2);
 		fprintf(fichOut,"if(!%s)goto %s;\n\n",temp,d.EtiquetaSalida);
 	}
 	else{
 		fprintf(fichProc,"%s = %s;\n",d.NombreVarControl,elem1);
 		fprintf(fichProc,"%s %s;\n","int",temp);
-		fprintf(fichProc,"%s:\n%s= %s<=%s;\n",d.EtiquetaEntrada,temp,d.NombreVarControl,elem2);
+		fprintf(fichProc,"%s:\n;\n%s= %s<=%s;\n",d.EtiquetaEntrada,temp,d.NombreVarControl,elem2);
 		fprintf(fichProc,"if(!%s)goto %s;\n\n",temp,d.EtiquetaSalida);
 	}
 }
@@ -354,12 +354,12 @@ void fin_for(){
 	if(en_fun==0){
 		fprintf(fichOut,"%s = %s + 1;\n", d.NombreVarControl,d.NombreVarControl); 
 		fprintf(fichOut,"goto %s;\n",d.EtiquetaEntrada);
-		fprintf(fichOut,"%s:\n\n",d.EtiquetaSalida);
+		fprintf(fichOut,"%s:\n;\n",d.EtiquetaSalida);
 	}
 	else{
 		fprintf(fichProc,"%s = %s + 1;\n", d.NombreVarControl,d.NombreVarControl); 
 		fprintf(fichProc,"goto %s;\n",d.EtiquetaEntrada);
-		fprintf(fichProc,"%s:\n\n",d.EtiquetaSalida);
+		fprintf(fichProc,"%s:\n;\n",d.EtiquetaSalida);
 	}
 	borrarDescriptor();
 }
