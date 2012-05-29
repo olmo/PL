@@ -84,6 +84,11 @@ DescriptorControl get_descriptor(){
 	return d;
 }
 
+DescriptorControl get_descriptor_ant(){
+	DescriptorControl d=tablaControl[indice-1];
+	return d;
+}
+
 
 
 char *tipo_actual;
@@ -296,6 +301,7 @@ void escribirElse(FILE* fich){
 
 void escribe_case(FILE *fich, char *elem){
 	DescriptorControl d;
+	generaEtiqueta(d.EtiquetaSalida);
 	generaEtiqueta(d.EtiquetaElse);
 	
 	int h=strlen(elem);
@@ -305,19 +311,37 @@ void escribe_case(FILE *fich, char *elem){
 	anadirDescriptor(d);
 	genera_temporal();
 	copiaToTemp1(elem);
-	
 }
 
-void escribe_case_sentencia(FILE *fich, char *elem){
+void escribe_case_sentencia(FILE *fich){
 	DescriptorControl d;
+	generaEtiqueta(d.EtiquetaEntrada);
 	generaEtiqueta(d.EtiquetaSalida);
 	anadirDescriptor(d);
+}
+
+void escribe_case_elemento(FILE *fich, char *elem){
+	DescriptorControl d=get_descriptor();
 	copiaToTemp1(elem);
-	
-	fprintf(fich,"if(%s!=%s)goto %s;\n\n",nombreVarCase,temp1,d.EtiquetaSalida);
+	fprintf(fich,"if(%s==%s)goto %s;\n\n",nombreVarCase,temp1,d.EtiquetaEntrada);
+}
+
+void escribe_case_finelementos(FILE *fich){
+	DescriptorControl d=get_descriptor();
+	fprintf(fich,"goto %s;\n\n",d.EtiquetaSalida);
+	fprintf(fich,"%s:\n;\n",d.EtiquetaEntrada);
 }
 
 void escribe_case_finsentencia(FILE *fich){
+	DescriptorControl d2=get_descriptor_ant();
+	fprintf(fich,"goto %s;\n",d2.EtiquetaSalida);
+
+	DescriptorControl d=get_descriptor();
+	fprintf(fich,"%s:\n;\n",d.EtiquetaSalida);
+	borrarDescriptor();
+}
+
+void escribe_case_fin(FILE *fich){
 	DescriptorControl d=get_descriptor();
 	fprintf(fich,"%s:\n;\n",d.EtiquetaSalida);
 	borrarDescriptor();

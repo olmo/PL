@@ -264,52 +264,61 @@ sentencia_switch : CASO IDENTIFICADOR {
 		else{ tipoAux = $2.tipo;
 			escribe_case(actual,$2.lexema);
 		}
-	}DE lista_variables_switch{
-		if( $5.tipo != $2.tipo ){
+	}DE {escribe_case_sentencia(actual);} lista_variables_switch{
+		if( $6.tipo != $2.tipo ){
 			printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible con el tipo de %s\n", yylineno, $2.lexema);
 		}
-	}DOSPUNTOS sentencia {escribe_case_finsentencia(actual);} lista_sentencia_switch opcion_switch_sino FIN {borrarDescriptor();};
+	}DOSPUNTOS {escribe_case_finelementos(actual);} sentencia {escribe_case_finsentencia(actual);} lista_sentencia_switch opcion_switch_sino FIN {escribe_case_fin(actual);};
 
 opcion_switch_sino : |  SINO sentencia;
 
-lista_sentencia_switch : | lista_variables_switch{
-							if( tipoAux != $1.tipo){
+lista_sentencia_switch : | {escribe_case_sentencia(actual);} lista_variables_switch{
+							if( tipoAux != $2.tipo){
 								printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible\n", yylineno);
 							}
 						} 
-						DOSPUNTOS sentencia {escribe_case_finsentencia(actual);} lista_sentencia_switch; 
+						DOSPUNTOS {escribe_case_finelementos(actual);} sentencia {escribe_case_finsentencia(actual);} lista_sentencia_switch; 
 
-lista_variables_switch: lista_variables_en_switch {$$.tipo = $1.tipo;} | CONSTANTE {$$.tipo = $1.tipo;initListaConstantes();addConstante($1.lexema); escribe_case_sentencia(actual, $1.lexema);}
-					lista_constantes{
+lista_variables_switch: lista_variables_en_switch {$$.tipo = $1.tipo;} | CONSTANTE {$$.tipo = $1.tipo;initListaConstantes();addConstante($1.lexema); escribe_case_elemento(actual, $1.lexema);}
+					lista_constantes_en_switch{
 						if($2.tipo != $1.tipo){
 							printf("\nError Semantico en la linea %d: Se esperaba una constante del mismo tipo que %s\n", yylineno, $1.lexema);
 						}
 					};
 					
-lista_variables_en_switch : IDENTIFICADOR lista_identificador_en_switch {
+lista_constantes_en_switch: {fseek(actual, -2, SEEK_CUR);} | COMA CONSTANTE{ 
+	if($2.tipo != tipo_pila)
+		printf("Error Semantico en la linea %d: La constante %s tiene un tipo diferente al resto de constantes\n", yylineno, $2.lexema);
+	else {
+		addConstante($2.lexema);
+		escribe_case_elemento(actual, $2.lexema);
+	}
+	}lista_constantes_en_switch;
+					
+lista_variables_en_switch : IDENTIFICADOR {escribe_case_elemento(actual, $1.lexema);} lista_identificador_en_switch {
 					if(existe($1.lexema)==0){
 						printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $1.lexema);} 
 					else{
 						$1.tipo=get_tipo($1.lexema);
 						
-						if($1.tipo != $2.tipo){
+						if($1.tipo != $3.tipo && $3.tipo != no_asignado){
 							printf("\nError Semantico en la linea %d: La variable %s no es del mismo tipo que el resto de la lista\n", yylineno, $1.lexema);
 						} 
 						else{
-							$$.tipo = $2.tipo;
+							$$.tipo = $1.tipo;
 						}
 					}
 				}
 				| error;
 
-lista_identificador_en_switch : {$$.tipo = no_asignado;} | COMA IDENTIFICADOR lista_identificador_en_switch {
+lista_identificador_en_switch : {$$.tipo = no_asignado;} | COMA IDENTIFICADOR {escribe_case_elemento(actual, $2.lexema);} lista_identificador_en_switch {
 					if(existe($2.lexema)==0){
 						printf("\nError Semantico en la linea %d: La variable %s no esta definida\n", yylineno, $2.lexema);
 					}
 					else{
 						$2.tipo=get_tipo($2.lexema);
 						
-						if($2.tipo != $3.tipo && $3.tipo!=no_asignado){
+						if($2.tipo != $4.tipo && $4.tipo!=no_asignado){
 							 printf("\nError Semantico en la linea %d: La variable %s no es del mismo tipo que el resto de la lista\n", yylineno, $2.lexema);} 
 						else{
 							$$.tipo = $2.tipo;}
