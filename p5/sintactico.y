@@ -268,7 +268,7 @@ sentencia_switch : CASO IDENTIFICADOR {
 		if( $5.tipo != $2.tipo ){
 			printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible con el tipo de %s\n", yylineno, $2.lexema);
 		}
-	}DOSPUNTOS sentencia lista_sentencia_switch opcion_switch_sino FIN;
+	}DOSPUNTOS sentencia {escribe_case_finsentencia(actual);} lista_sentencia_switch opcion_switch_sino FIN {borrarDescriptor();};
 
 opcion_switch_sino : |  SINO sentencia;
 
@@ -277,9 +277,9 @@ lista_sentencia_switch : | lista_variables_switch{
 								printf("\nError Semantico en la linea %d: El tipo de la lista de variables es incompatible\n", yylineno);
 							}
 						} 
-						DOSPUNTOS sentencia lista_sentencia_switch; 
+						DOSPUNTOS sentencia {escribe_case_finsentencia(actual);} lista_sentencia_switch; 
 
-lista_variables_switch: lista_variables_en_switch {$$.tipo = $1.tipo;} | CONSTANTE {$$.tipo = $1.tipo;initListaConstantes();addConstante($1.lexema);} 
+lista_variables_switch: lista_variables_en_switch {$$.tipo = $1.tipo;} | CONSTANTE {$$.tipo = $1.tipo;initListaConstantes();addConstante($1.lexema); escribe_case_sentencia(actual, $1.lexema);}
 					lista_constantes{
 						if($2.tipo != $1.tipo){
 							printf("\nError Semantico en la linea %d: Se esperaba una constante del mismo tipo que %s\n", yylineno, $1.lexema);

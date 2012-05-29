@@ -33,6 +33,8 @@ int indice=-1;
 int temporales[500];
 int indTemp=-1;
 
+char nombreVarCase[15];
+
 
 
 void libera_temporales(){
@@ -294,15 +296,31 @@ void escribirElse(FILE* fich){
 
 void escribe_case(FILE *fich, char *elem){
 	DescriptorControl d;
-	
-	//generaEtiqueta(d.EtiquetaSalida);
+	generaEtiqueta(d.EtiquetaElse);
 	
 	int h=strlen(elem);
 	copiaTo(elem,d.NombreVarControl, h);
+	copiaTo(elem,nombreVarCase, h);
 	
 	anadirDescriptor(d);
 	genera_temporal();
 	copiaToTemp1(elem);
+	
+}
+
+void escribe_case_sentencia(FILE *fich, char *elem){
+	DescriptorControl d;
+	generaEtiqueta(d.EtiquetaSalida);
+	anadirDescriptor(d);
+	copiaToTemp1(elem);
+	
+	fprintf(fich,"if(%s!=%s)goto %s;\n\n",nombreVarCase,temp1,d.EtiquetaSalida);
+}
+
+void escribe_case_finsentencia(FILE *fich){
+	DescriptorControl d=get_descriptor();
+	fprintf(fich,"%s:\n;\n",d.EtiquetaSalida);
+	borrarDescriptor();
 }
 
 escribirExpresionUnariaPila(FILE* fich, char *pila, char*operacion, dtipo tipo){
