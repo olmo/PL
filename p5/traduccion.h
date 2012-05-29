@@ -359,12 +359,18 @@ escribirExpresionUnariaPila(FILE* fich, char *pila, char*operacion, dtipo tipo){
 			fprintf(fich,"%s = *stack_pop(&%s, 0);\n",temp,temp1);
 		else fprintf(fich,"%s = *stack_pop(&%s, 0);\n",temp,temp1);
 	}else if(!strcmp(operacion, "top")){
-		fprintf(fich,"%s %s;\n",TraducirTipo(tipoPila(tipo), 0),temp);
-		if(tipo == real || tipo == pila_real)
+		if(tipo == real || tipo == pila_real){
+			fprintf(fich,"%s %s;\n",TraducirTipo(tipoPila(tipo), 0),temp);
 			fprintf(fich,"%s = tope(&%s);\n",temp,temp1);
-		else if (tipo == caracter || tipo == pila_caracter)
-			fprintf(fich,"%s = (char)stack_top(&%s);\n",temp,temp1);
-		else fprintf(fich,"%s = (int)stack_top(&%s);\n",temp,temp1);
+			}
+		else if (tipo == caracter || tipo == pila_caracter){
+			fprintf(fich,"char* %s;\n",temp);
+			fprintf(fich,"%s = (char*)stack_top(&%s);\n",temp,temp1);
+		}
+		else {
+			fprintf(fich,"%s %s;\n",TraducirTipo(tipoPila(tipo), 0),temp);
+			fprintf(fich,"%s = (int)stack_top(&%s);\n",temp,temp1);
+		}
 	}else if(!strcmp(operacion, "empty")){
 		fprintf(fich,"%s %s;\n",TraducirTipo(entero, 0),temp);
 		if(tipo == real || tipo == pila_real)

@@ -283,14 +283,14 @@ void printPila(Stack* pila, int tipo){
 		if(tipo == ENTERO || tipo == BOOLEAN)
 			printf("%d, ", (int)actual->data);
 		else if(tipo == CHAR)
-			printf("%c, ", (char)actual->data);
+			printf("%c, ", (char*)actual->data);
 		
 		actual = actual->link;
 	}
 	if(tipo == ENTERO || tipo == BOOLEAN)
 			printf("%d", (int)actual->data);
 	else if(tipo == CHAR)
-		printf("%c", (char)actual->data);
+		printf("%c", (char*)actual->data);
 
 }
 		
