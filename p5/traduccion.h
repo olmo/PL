@@ -97,7 +97,7 @@ void abrir_ficheros(){
 
 	fichOut = fopen(nombre_fichero,"w");
 	fichProc = fopen("dec_fun","w");
-	fprintf(fichProc,"#include <stdio.h>\n\n");
+	fprintf(fichProc,"#include \"Stack.h\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\n");
 	actual = fichOut;
 }
 
@@ -124,7 +124,7 @@ void seleccionar_fProc(){
 }
 
 void escribir_cabecera(){//hay que añadir los includes
-	fprintf(fichOut,"#include \"dec_fun\"\n#include \"Stack.h\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\nint main()");
+	fprintf(fichOut,"#include \"dec_fun\"\n#include <stdio.h>\n\nint main()");
 
 }
 
@@ -190,12 +190,12 @@ void actualiza_tipo(char* tipo){
 }
 
 void escribir(FILE* fich, char *el){
-	fprintf(fichOut,"%s",el);
+	fprintf(fich,"%s",el);
 
 }
 
 void escribe_coma(){
-	fprintf(fichOut,", ");
+	fprintf(actual,", ");
 }
 
 void escribirListaParametros(FILE* fich, char* tipo, int num){
@@ -435,7 +435,7 @@ void escribirInicializacion(FILE* fich, int num, char* valor){
 
 }
 void escribe_void_vacio(char *iden ){
-	fprintf(fichOut,"\nvoid %s()",iden ); 
+	fprintf(actual,"\nvoid %s()",iden ); 
 }
 
 void escribe_argumentos(char* nomProc){
@@ -445,25 +445,25 @@ void escribe_argumentos(char* nomProc){
 	int primero = 1;
 	for(i=TOPE-args+1;i<=TOPE;i++){
 		if(primero==1){
-			fprintf(fichOut,"%s",MostrarTipo(TS[i].tipoDato)); 
+			fprintf(actual,"%s",MostrarTipo(TS[i].tipoDato)); 
 			primero =0;
 		}
 		else{
-			fprintf(fichOut,", %s",MostrarTipo(TS[i].tipoDato)); 	
+			fprintf(actual,", %s",MostrarTipo(TS[i].tipoDato)); 	
 		}
-		fprintf(fichOut," %s",TS[i].nombre); 
+		fprintf(actual," %s",TS[i].nombre); 
 		if(TS[i].pila==1){//si es pila
 			//Acciones para escribir pilas
 			;
 		}
 	}
-	fprintf(fichOut,")"); 
+	fprintf(actual,")"); 
 
 }
 
 
 void escribirProc(char *iden){
-	fprintf(fichOut,"\nvoid %s(",iden); 
+	fprintf(actual,"\nvoid %s(",iden); 
 }
 
 

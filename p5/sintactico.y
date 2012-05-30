@@ -103,15 +103,15 @@ int pilaError = 0;
 
 programa : PROGRAMA{abrir_ficheros(); escribir_cabecera();escribir_llaveA(actual);} bloque PUNTO{escribir(actual, "\nreturn 0;\n");escribir_llaveC(actual);};
 
-bloque : INICIO {IntroIniBloq(); seleccionar_fOut(); } 
+bloque : INICIO {IntroIniBloq(); } 
 	declar_de_variables_locales 
 	declar_de_subprogs 
 	sentencias 
-	FIN {IntroFinBloq();seleccionar_fOut();};
+	FIN {IntroFinBloq();};
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
-declar_subprog : cabecera_subprograma {escribir_llaveA(actual);} bloque {escribir_llaveC(actual);} PUNTOCOMA;
+declar_subprog : {seleccionar_fProc();} cabecera_subprograma {escribir_llaveA(actual);} bloque {escribir_llaveC(actual);} PUNTOCOMA {seleccionar_fOut();};
 
 declar_de_variables_locales : | INIVAR  variables_locales FINVAR;
 
@@ -142,7 +142,7 @@ cabecera_subprograma : PROCEDIMIENTO IDENTIFICADOR PARIZQ {
 									escribirProc($2.lexema);
 								} 
 							}
-						variables_subprograma {CuentaParametros ();} PARDER{escribir(actual,");\n");};
+						variables_subprograma {CuentaParametros ();} PARDER{escribir(actual,")\n");};
 
 variables_subprograma : {numVarDeclaradas = 0;}| lista_parametros DOSPUNTOS tipo {
 			escribirListaParametros(actual, TraducirTipo($3.tipo, 0), numVarDeclaradas); 
@@ -378,7 +378,6 @@ expresion : PARIZQ expresion PARDER {
 						printf ("\nError Semantico en la linea %d: El operador %s incompatible con tipo: %s, se esperaba boolean. \n", yylineno, $1.lexema, MostrarTipo($2.tipo));
 					}else{
 						$$.tipo=$2.tipo;
-						seleccionar_fOut();
 						escribirExpresionUnaria(actual, $2.lexema, "!", MostrarTipo($2.tipo));
 						copiaTo(temp, $$.lexema, 11);
 					}
@@ -399,7 +398,6 @@ expresion : PARIZQ expresion PARDER {
 							escribirExpresionUnariaPila(actual, $2.lexema, "empty", $2.tipo);
 							copiaTo(temp, $2.lexema, 11);
 						}
-						//seleccionar_fOut();
 						//escribirExpresionUnaria(actual, $2.lexema, $1.lexema, MostrarTipo($2.tipo));
 					}
 				}
@@ -634,7 +632,7 @@ lista_constantes : {fseek(actual, -2, SEEK_CUR);} | COMA CONSTANTE{
 	}
 	}lista_constantes;
 
-tipo : TIPOSIMPLE {seleccionar_fOut();escribirVariables(actual, TraducirTipo($1.tipo, 0));asignarTipoCascada($1.tipo);} 
+tipo : TIPOSIMPLE {escribirVariables(actual, TraducirTipo($1.tipo, 0));asignarTipoCascada($1.tipo);} 
 	| PILA TIPOSIMPLE {esPila();escribirVariables(actual, TraducirTipo($2.tipo, 1));asignarTipoCascada($2.tipo);}
 	| error{asignarTipoCascada(desconocido);};
 
