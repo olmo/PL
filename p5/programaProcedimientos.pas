@@ -34,6 +34,5 @@ fin;
 	escribir n;
 	proc2(2,n);
 	escribir n;
-	proc3();
 	
 fin.
