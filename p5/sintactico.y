@@ -20,7 +20,7 @@ void yyerror( char * msg ) ;
 int linea_actual = 1 ;
 dtipo tipoPorAsignar;
 int pila=0;
-int argumentos =1;
+int argumentos =0;
 int correcto=1;
 char *nomproc;
 int numparam=0;
@@ -111,7 +111,7 @@ bloque : INICIO {IntroIniBloq(); seleccionar_fOut(); }
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
-declar_subprog : cabecera_subprograma bloque PUNTOCOMA;
+declar_subprog : cabecera_subprograma {escribir_llaveA(actual);} bloque {escribir_llaveC(actual);} PUNTOCOMA;
 
 declar_de_variables_locales : | INIVAR  variables_locales FINVAR;
 
@@ -192,7 +192,7 @@ llamada_procedimiento : PARIZQ {
 	}else{
 		numparam = numParametros(iden);
 	}
-	} lista_parametros_procedimiento PARDER PUNTOCOMA{
+	} lista_parametros_procedimiento2 PARDER PUNTOCOMA{
 	if(existeProc(iden)){
 		if(numParametros(iden) != argumentos){
 			printf("\nError Semantico en la linea %d: El procedimiento %s admite %d parametros, pero se le pasaron %d\n", yylineno, iden, numParametros(iden), argumentos);
@@ -204,31 +204,34 @@ llamada_procedimiento : PARIZQ {
 			escribir(actual, ");\n");
 		}
 	}
-	argumentos = 1;
+	argumentos = 0;
 	numparam = 0;
 	};
+	
+lista_parametros_procedimiento2 : | lista_parametros_procedimiento;
 
 lista_parametros_procedimiento: expresion {
-	$$.numArgumentos = 1;
-	
-	if($$.numArgumentos <= numparam){
-		if(tipoParametro($$.numArgumentos, iden) != $1.tipo){
-			printf("\nError Semantico en la linea %d: El parametro %s ha de ser de tipo %s.\n", yylineno, $1.lexema, MostrarTipo(tipoParametro($$.numArgumentos, iden)));}
-			else strcpy(listaArgumentos, $1.lexema);
+			$$.numArgumentos = 1;
 			
-		}
-		} | lista_parametros_procedimiento COMA {strcat(listaArgumentos, ", ");} expresion{
-			$$.numArgumentos = 1+$1.numArgumentos;
 			if($$.numArgumentos <= numparam){
-				if(tipoParametro($$.numArgumentos, iden) != $4.tipo){ 
+				if(tipoParametro($$.numArgumentos, iden) != $1.tipo)
 					printf("\nError Semantico en la linea %d: El parametro %s ha de ser de tipo %s.\n", yylineno, $1.lexema, MostrarTipo(tipoParametro($$.numArgumentos, iden)));
-				}
-				else{
-					strcat(listaArgumentos, $4.lexema);
-				}
+				else strcpy(listaArgumentos, $1.lexema);
+					
 			}
 			argumentos++;
-		};		
+		} 
+		| lista_parametros_procedimiento COMA {strcat(listaArgumentos, ", ");} expresion {
+			$$.numArgumentos = 1+$1.numArgumentos;
+			
+			if($$.numArgumentos <= numparam){
+				if(tipoParametro($$.numArgumentos, iden) != $4.tipo)
+					printf("\nError Semantico en la linea %d: El parametro %s ha de ser de tipo %s.\n", yylineno, $4.lexema, MostrarTipo(tipoParametro($$.numArgumentos, iden)));
+				else
+					strcat(listaArgumentos, $4.lexema);
+			}
+			argumentos++;
+		};
 
 sentencia_asignacion : ASIGNACION expresion PUNTOCOMA {
 		
