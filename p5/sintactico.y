@@ -111,7 +111,7 @@ bloque : INICIO {IntroIniBloq(); }
 		
 declar_de_subprogs : | declar_de_subprogs declar_subprog;
 
-declar_subprog : {seleccionar_fProc();} cabecera_subprograma {escribir_llaveA(actual);} bloque {escribir_llaveC(actual);} PUNTOCOMA {seleccionar_fOut();};
+declar_subprog : cabecera_subprograma {escribir_llaveA(actual);} bloque {escribir_llaveC(actual);} PUNTOCOMA;
 
 declar_de_variables_locales : | INIVAR  variables_locales FINVAR;
 

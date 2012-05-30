@@ -97,7 +97,7 @@ void abrir_ficheros(){
 
 	fichOut = fopen(nombre_fichero,"w");
 	fichProc = fopen("dec_fun","w");
-	fprintf(fichProc,"#include \"Stack.h\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\n");
+	fprintf(fichProc,"#include <stdio.h>\n\n");
 	actual = fichOut;
 }
 
@@ -124,7 +124,7 @@ void seleccionar_fProc(){
 }
 
 void escribir_cabecera(){//hay que añadir los includes
-	fprintf(fichOut,"#include \"dec_fun\"\n#include <stdio.h>\n\nint main()");
+	fprintf(fichOut,"#include \"dec_fun\"\n#include \"Stack.h\"\n#include \"dec_dat.h\"\n#include <stdio.h>\n\nint main()");
 
 }
 
